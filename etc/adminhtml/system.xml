@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Magento/Config/etc/system_file.xsd">
+    <system>
+        <tab id="typesense" translate="label" sortOrder="991" class="thecommerceshop">
+            <label>Thecommerceshop</label>
+        </tab>
+        <section id="typesense_general" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>Credential and Basic Setup</label>
+            <tab>typesense</tab>
+            <resource>Thecommerceshop_Predictivesearch::config_typesense</resource>
+            <group id="credentials" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General Configuration</label>
+                <field id="enable_frontend" translate="label comment" type="select" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Search</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="host" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Host</label>
+                    <depends>
+                        <field id="enable_frontend">1</field>
+                    </depends>
+                    <validate>required-entry</validate>
+                </field>
+                <field id="search_only_api_key" translate="label" type="password" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Search-only (public) API key</label>
+                    <depends>
+                        <field id="enable_frontend">1</field>
+                    </depends>
+                    <validate>required-entry</validate>
+                </field>
+                <field id="admin_api_key" translate="label" type="password" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Admin API key</label>
+                    <depends>
+                        <field id="enable_frontend">1</field>
+                    </depends>
+                    <validate>required-entry</validate>
+                </field>
+                <field id="index_prefix" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Index Name Prefix</label>
+                    <depends>
+                        <field id="enable_frontend">1</field>
+                    </depends>
+                    <validate>required-entry</validate>
+                </field>
+                <field id="protocol" translate="label" type="select"  sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Protocol</label>
+                       <source_model>Thecommerceshop\Predictivesearch\Model\Source\Port</source_model>
+                    <depends>
+                        <field id="enable_frontend">1</field>
+                    </depends>
+                    <validate>required-entry</validate>
+                </field>
+                <field id="port" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Port</label>
+                    <depends>
+                        <field id="enable_frontend">1</field>
+                    </depends>
+                    <validate>required-entry</validate>
+                </field>
+                
+            </group>
+        </section>
+        <section id="typesense_autocomplete" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Autocomplete Menu</label>
+            <class>separator-top</class>
+            <tab>typesense</tab>
+            <resource>Thecommerceshop_Predictivesearch::config_typesense</resource>
+            <group id="autocomplete" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Autocomplete Menu</label>
+                <field id="enable_frontend" translate="label comment" type="select" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Autocomplete Menu</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="nb_of_products_suggestions" translate="label comment" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <validate>required-entry validate-digits validate-not-negative-number validate-digits-range digits-range-1-20</validate>
+                    <label>Number of products</label>
+                    <depends>
+                        <field id="enable_frontend">1</field>
+                    </depends>
+                    <comment>How many products to display by default</comment>
+                </field>
+                <field id="nb_of_categories_suggestions" translate="label comment" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <validate>required-entry validate-digits validate-not-negative-number validate-digits-range digits-range-1-20</validate>
+                    <label>Number of categories</label>
+                    <depends>
+                        <field id="enable_frontend">1</field>
+                    </depends>
+                    <comment>How many categories to display by default?</comment>
+                </field>
+                <field id="word_length" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <validate>validate-digits</validate>
+                    <label>Minimum query length to show autosuggestion</label>
+                     <depends>
+                        <field id="enable_frontend">1</field>
+                        </depends>
+                </field>
+                <field id="excluded_pages" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Exclude Pages</label>
+                    <depends>
+                        <field id="enable_frontend">1</field>
+                    </depends>
+                     <frontend_model>Thecommerceshop\Predictivesearch\Block\Adminhtml\Form\Field\Autocomplete\CustomPages</frontend_model>
+                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
