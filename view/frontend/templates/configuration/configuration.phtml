@@ -1,0 +1,8 @@
+<?php
+
+/** @var \Ceymox\TypesenseSearch\Block\Configuration $block */
+$configuration = $block->getConfigurationData();
+?>
+<script>
+    window.typesenseConfig = <?= /* @noEscape */ $configuration; ?>;
+</script>

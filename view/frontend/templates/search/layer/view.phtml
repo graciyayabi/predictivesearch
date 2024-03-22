@@ -1,0 +1,44 @@
+<?php
+/**
+ *
+ * @package Ceymox_TypesenseSearch
+ * @author Ceymox Technologies Pvt. Ltd.
+ */
+
+ /**
+  * @var \Magento\Framework\Escaper $escaper
+  */
+  $viewModel = $block->getData('view_model');
+?>
+<div class="filter_main">
+    <div id="selected-filter">
+        <button id="clear_all"><?= $escaper->escapeHtmlAttr(__('Clear All')) ?></button>
+        <div id="filter-items"></div>
+    </div>
+    <?php if ($viewModel->priceSlider() == 1): ?>
+        <span class="item_label"><?= $escaper->escapeHtmlAttr(__('Price')) ?></span>
+        <div class="slider-box">
+            <div id="price-range" class="slider"></div>
+            <input type="text" id="priceRange" readonly>
+        </div>
+        <div id="search-result-component" data-bind="scope:'search-resultcomponent'">
+        <!-- ko template: getTemplate() --><!-- /ko -->
+        <script type="text/x-magento-init">
+        {
+            "#search-result-component": {
+                "Magento_Ui/js/core/app": {
+                "components": {
+                        "search-resultcomponent": {
+                            "component": "Thecommerceshop_Predictivesearch/js/resultpage/result"
+                        }
+                    }
+                }
+            }
+        }
+        </script>
+    </div>
+    <?php endif; ?>
+    </div>
+    <div class="container" id="filter_container"> 
+    </div>
+</div>

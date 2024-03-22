@@ -1,8 +1,5 @@
 <?php
-/**
- * @package Ceymox_TypesenseSearch
- * @author  Ceymox Technologies Pvt. Ltd.
- */
+
 declare(strict_types=1);
 
 namespace Thecommerceshop\Predictivesearch\Model;

@@ -281,9 +281,9 @@ class ProductDataProcessor
     
                 }
 
-                // if ($this->configData->isCronEnbaled() || $mode == 'cron') {
-                //     $this->queueProcessor->processProductQueue($prdCollection, $indexName);
-                // } else {
+                if ($this->configData->isCronEnbaled() || $mode == 'cron') {
+                    $this->queueProcessor->processProductQueue($prdCollection, $indexName);
+                } else {
                     $prdCollection = implode(PHP_EOL, $prdCollection);
                     //sync typesense products here...
                     $response = $this->typeSenseApi->importCollectionData($indexName, $prdCollection);
@@ -291,7 +291,7 @@ class ProductDataProcessor
                     //log response
                     $this->logger->error($response);
                     //error handling section need to be implemented here....
-                //}
+                }
             } catch (Exception $e) {
                 $this->logger->error($e->getMessage());
             }

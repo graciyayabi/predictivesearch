@@ -1,11 +1,4 @@
 <?xml version="1.0"?>
-<!--
-/**
- * 
- * @package Ceymox_TypesenseSearch
- * @author Ceymox Technologies Pvt. Ltd.
- */
--->
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
     <table name="typesense_job_queue" resource="default" engine="innodb" comment="Typesense Job Table">
         <column xsi:type="int" name="job_id" unsigned="false" nullable="false" identity="true" comment="Job Id"/>
