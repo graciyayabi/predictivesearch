@@ -8,6 +8,7 @@ use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
 use Thecommerceshop\Predictivesearch\Block\Adminhtml\Form\Field\AttributeList;
 use Thecommerceshop\Predictivesearch\Block\Adminhtml\Form\Field\FacetOptions;
+use Thecommerceshop\Predictivesearch\Block\Adminhtml\Form\Field\FacetType;
 
 class FilterAttributes extends AbstractFieldArray
 {
@@ -20,6 +21,10 @@ class FilterAttributes extends AbstractFieldArray
      * @var FacetOptions
      */
     private $facetOptionRenderer;
+    /**
+     * @var FacetType
+     */
+    private $facetTypeRenderer;
 
     /**
      * Prepare rendering the new field by adding all the needed columns
@@ -30,7 +35,14 @@ class FilterAttributes extends AbstractFieldArray
             'label' => __('Attributes'),
             'renderer' => $this->getAttributesRenderer()
         ]);
-
+         $this->addColumn(
+             'facet',
+             [
+                'label' => __('Facet type'),
+                'class' => 'required-entry',
+                 'renderer' => $this->getFacetTypeRenderer()
+             ]
+         );
          $this->addColumn(
              'fieldName',
              [
@@ -68,6 +80,12 @@ class FilterAttributes extends AbstractFieldArray
         if ($filterOption !== null) {
             $options[
                 'option_' . $this->getFacetOptionRenderer()->calcOptionHash($filterOption)
+            ] = 'selected="selected"';
+        }
+      $filterFacet = $row->getFacet();
+        if ($filterOption !== null) {
+            $options[
+                'option_' . $this->getFacetTypeRenderer()->calcOptionHash($filterFacet)
             ] = 'selected="selected"';
         }
 
@@ -108,5 +126,22 @@ class FilterAttributes extends AbstractFieldArray
             );
         }
         return $this->facetOptionRenderer;
+    }
+      /**
+     * Facet Option Render
+     *
+     * @return FacetOptions
+     * @throws LocalizedException
+     */
+    private function getFacetTypeRenderer()
+    {
+        if (!$this->facetTypeRenderer) {
+            $this->facetTypeRenderer = $this->getLayout()->createBlock(
+                FacetType::class,
+                '',
+                ['data' => ['is_render_to_js_template' => true]]
+            );
+        }
+        return $this->facetTypeRenderer;
     }
 }

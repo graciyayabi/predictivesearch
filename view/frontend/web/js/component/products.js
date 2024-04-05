@@ -32,6 +32,8 @@ define(
         const CURRENCY = typesenseConfig.general.store_currency;
         const STORE = typesenseConfig.general.storeCode;
         const PLACEHOLDER = typesenseConfig.general.placeholder;
+        const SEMANTIC_SEARCH = typesenseConfig.additional_section.semantic_status;
+        const HYBRID_SEARCH = typesenseConfig.additional_section.hybrid_search;
 
         return {
             /**
@@ -54,7 +56,7 @@ define(
                     }
                     let searchParameters = {
                         'q'         : keyword,
-                        'query_by'  : 'product_name',
+                        'query_by'  : searchAttributes,
                         'per_page'  : MAX_COUNT,
                         'sort_by'   : ranking,
                         'filter_by' : `storeCode:["${STORE}"]`,
@@ -63,7 +65,15 @@ define(
                         'min_len_1typo' : WORD_LENGTH,
                         'min_len_2typo' : WORD_LENGTH,
                     }
-
+                    
+                    if (SEMANTIC_SEARCH) {
+                        searchParameters.query_by = 'embedding';
+                        searchParameters.vector_query = 'embedding:([], distance_threshold:0.30)';
+                        if (HYBRID_SEARCH == 1) {
+                            searchParameters.query_by = 'embedding,'+searchAttributes;
+                        }
+                    }
+                
                     typsenseClient.collections(INDEX_PERFIX+STORE+'-products').documents().search(searchParameters).then((searchResults) => {
                         let html = '';
                         if (searchResults.hits.length < 1) {
