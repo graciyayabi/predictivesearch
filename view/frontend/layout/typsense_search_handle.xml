@@ -13,10 +13,33 @@
                 <argument name="setTemplate" xsi:type="string">Thecommerceshop_Predictivesearch::searchautocomplete.phtml</argument>
             </action>
         </referenceBlock>
-         <referenceBlock name="search.result">
+        <referenceBlock name="search.result">
             <action ifconfig="typesense_search_result/instant_search_result/enable_result_page" method="setTemplate">
                 <argument name="template" xsi:type="string">Thecommerceshop_Predictivesearch::search/result.phtml</argument>
             </action>
+        </referenceBlock>
+        <referenceBlock name="catalogsearch.leftnav">
+            <action ifconfig="typesense_search_result/instant_search_result/enable_result_page" method="setTemplate">
+                <argument name="template" xsi:type="string">Thecommerceshop_Predictivesearch::search/layer/view.phtml</argument>
+            </action>
+            <arguments>
+                <argument name="view_model"
+                        xsi:type="object">Thecommerceshop\Predictivesearch\ViewModel\General</argument>
+            </arguments>
+        </referenceBlock>
+         <referenceBlock name="category.products.list">
+            <action ifconfig="typesense_search_result/instant_search_result/enable_result_page" method="setTemplate">
+                <argument name="template" xsi:type="string">Thecommerceshop_Predictivesearch::category/list.phtml</argument>
+            </action>
+        </referenceBlock>
+         <referenceBlock name="catalog.leftnav">
+            <action ifconfig="typesense_search_result/instant_search_result/enable_result_page" method="setTemplate">
+                <argument name="template" xsi:type="string">Thecommerceshop_Predictivesearch::search/layer/view.phtml</argument>
+            </action>
+            <arguments>
+                <argument name="view_model"
+                        xsi:type="object">Thecommerceshop\Predictivesearch\ViewModel\General</argument>
+            </arguments>
         </referenceBlock>
     </body>
 </page>

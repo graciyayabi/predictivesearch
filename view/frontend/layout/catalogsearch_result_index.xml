@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * 
+ * @package Ceymox_TypesenseSearch
+ * @author Ceymox Technologies Pvt. Ltd.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="breadcrumbs" remove="true" />
+        <referenceBlock name="page.main.title" display="false"/>
+        <referenceContainer name="columns.top">
+            <block ifconfig="typesense_search_result/instant_search_result/enable_result_page" class="Magento\Framework\View\Element\Template" name="typesense.loader" template="Thecommerceshop_Predictivesearch::loader.phtml" />
+        </referenceContainer>
+        <move element="catalog.compare.sidebar" destination="sidebar.main" />
+        <move element="wishlist_sidebar" destination="sidebar.main" />
+    </body>
+</page>

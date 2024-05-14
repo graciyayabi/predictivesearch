@@ -92,6 +92,14 @@
                      <depends>
                         <field id="enable_result_page">1</field>
                     </depends>
+                    <comment>
+                        <![CDATA[
+                            Specify the filtering options you want to offer on a search results page.<br>
+                                &nbsp; - Disjunctive allows a selection of different values per facet (e.g. hotels with 4 OR 5 stars).<br>
+                                &nbsp; - Conjunctive allows a selection of only one value per facet (e.g. only "Size M").
+                            <br><br>
+                                ]]>
+                   </comment>
                 </field>
                 <field id="sort_options" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Sort Options</label>

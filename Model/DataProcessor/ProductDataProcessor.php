@@ -445,7 +445,7 @@ class ProductDataProcessor
                 'image_url' => $image,
                 'small_image' => $smallImage,
                 'thumbnail' => $thumbNailImage,
-                'price' => round((float)$price, 2),
+                'price' => $price,
                 'type_id' => $product->getTypeId(),
                 'visibility' => $product->getVisibility(),
                 'category' => $categoryNameArr,

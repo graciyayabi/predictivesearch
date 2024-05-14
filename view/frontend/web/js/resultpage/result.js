@@ -12,6 +12,7 @@ define(
     let page = 1;
     let keyword = null;
     let filterValue = null;
+    let sortParam= null;
     //initialize the typsense client
     const typsenseClient = searchConfig.createClient(typesenseConfig);
 
@@ -31,7 +32,7 @@ define(
             
             $( document ).ready(function() {
                 if (queryParam) {
-                    productResult.performSearch(queryParam, page, typsenseClient, filterValue);
+                    productResult.performSearch(queryParam, page, typsenseClient, filterValue,sortParam);
                 }
             });
 
