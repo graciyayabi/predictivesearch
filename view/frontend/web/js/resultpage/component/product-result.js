@@ -195,7 +195,7 @@ define(
                     }
                 }
 
-                searchParameters.filter_by = requestQuery;
+                searchParameters.filter_by = requestQuery+&&product_status:1;
 
                 if (priceFilter ) {
                     priceFilter = priceFilter.split('-');

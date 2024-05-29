@@ -63,17 +63,13 @@ define(
                     $.when(typsenseClient.multiSearch.perform(searchRequests, commonSearchParams)).done(function(searchResults) {
                         $.each(searchResults.results, function(index, value) {
                             if (value.request_params.collection_name === INDEX_PERFIX+STORE+'-products') {
-                                renderProducts(value.hits, value.found);
+                                renderProducts(value.hits, value.found,keyword,value.out_of,value.search_time_ms);
                             }
                             if (value.request_params.collection_name === INDEX_PERFIX+STORE+'-categories') {
                                 renderCategory(value.hits);
                             }
                             if (value.request_params.collection_name === INDEX_PERFIX+STORE+'-pages') {
                                 renderPages(value.hits);
-                            }
-
-                            if (value.request_params.collection_name === INDEX_PERFIX+STORE+'-suggestions') {
-                                renderSuggestions(value.hits);
                             }
 
                         });
@@ -100,38 +96,6 @@ define(
             return suggestions;
         }
 
-        /**
-         * 
-         * @param {*} hits 
-         */
-        function renderSuggestions(hits) {
-            let html = '';
-            if (hits.length < 1) {
-                let htmlhead = '<div class="popular_search_head">Popular Searches </div>';
-                $.each(POPULAR_TERMS, function (key, val) {
-                    let valkeyword = val.split(" ")[0];
-                    html += `
-                        <a href="${urlFormatter.build('catalogsearch/result/?q='+val)}">
-                            <div class="popular_items">${val.toUpperCase()}</div>
-                        </a>
-                    `
-                });
-                html = htmlhead+html;
-            }
-
-            $.each(hits, function (key, val) {
-                let name = val.document.q;
-                if (HIGHLIGHTS == 1) {
-                    name = val.highlight.q.snippet;
-                }
-                html += ` <div class="suggestion_container">
-                    <a href="${urlFormatter.build('catalogsearch/result/?q='+val.document.q)}">
-                        <div class="suggest_category">${name}</div>
-                    </a>
-                </div>`;
-            });
-            $('#suggestion_section').html(html);
-        }
 
         /**
          * 
@@ -154,11 +118,7 @@ define(
                 'query_by'  : productSearchAttributes,
                 'per_page'  : PRODUCT_MAX_COUNT,
                 'sort_by'   : ranking,
-                'filter_by' : `storeCode:["${STORE}"]`,
-                'typo_tokens_threshold' : TYPO_ENABLED,
-                'num_typos' : 2,
-                'min_len_1typo' : WORD_LENGTH,
-                'min_len_2typo' : WORD_LENGTH,
+                'filter_by' : `storeCode:["${STORE}"]`&&`product_status:1`
             }            
             if (SEMANTIC_SEARCH) {
                 productSearchParameters.query_by = 'embedding';
@@ -179,15 +139,20 @@ define(
          * 
          * @param {*} hits 
          */
-        function renderProducts(hits, found) {
+        function renderProducts(hits, found,keyword,out_of,search_time_ms) {
+          let searchUrl = BASE_URL+'catalogsearch/result/?q='+keyword;
+        console.log(hits);
+        console.log(found);
             html = '';
             if (hits.length < 1) {
                 html = 'No products found';
             }
 
             let count = 0;
+$('#auto_search_time').html(
+                            `<div>Found <a href="${searchUrl}">${found}</a> out of ${out_of} Results in ${search_time_ms} ms</div>`
+                        );
             $.each(hits, function (key, val) {
-                if (val.document.product_status == 1) {
                     let price = val.document.price;
                     if (val.document.special_price) {
                         let currentDate = new Date();
@@ -201,9 +166,9 @@ define(
                     }
                     var name = val.document.product_name;
                     var sku = val.document.sku;
-                    if (typeof val.highlights[0] !== 'undefined'&& HIGHLIGHTS == 1) {
-                        var highlight = val.highlights[0].field || false;
-                        if (highlight == 'name') {
+                     if (typeof val.highlight !== 'undefined'&& HIGHLIGHTS == 1) {
+                        var highlight = val.highlight.name;
+                        if (val.highlight.name) {
                             var name = val.highlight.name.snippet;
                         } else if (highlight == 'price') {
                             price  = val.highlight.price.snippet;
@@ -211,7 +176,6 @@ define(
                             var sku =  val.highlight.sku.snippet;
                         }
                     }
-
                     let image = null;
                     if (val.document.thumbnail) {
                         image = val.document.thumbnail;
@@ -247,7 +211,6 @@ define(
                         $('.product-viewall').show();
                         return false;
                     }
-                }
             });
             if (count < PRODUCT_MAX_COUNT) {
                 $('.product-viewall').hide();
@@ -278,10 +241,6 @@ define(
                 'per_page'  : CAT_MAX_COUNT,
                 'filter_by' : `store:["${STORE}"]`,
                 'sort_by'   : ranking,
-                'typo_tokens_threshold' : TYPO_ENABLED,
-                'num_typos' : 2,
-                'min_len_1typo' : WORD_LENGTH,
-                'min_len_2typo' : WORD_LENGTH,
             }
             $.each(catSearchParameters, function (key, val) {
                 if (!val) {
@@ -328,11 +287,7 @@ define(
                 'q'         : keyword,
                 'query_by'  : 'page_title',
                 'per_page'  : PAGE_MAX_COUNT,
-                'filter_by' : `store:["${STORE}"]`,
-                'typo_tokens_threshold' : TYPO_ENABLED,
-                'num_typos' : 0,
-                'min_len_1typo' : WORD_LENGTH,
-                'min_len_2typo' : WORD_LENGTH,
+                'filter_by' : `store:["${STORE}"]`
             }
             $.each(pageSearchParameters, function (key, val) {
                 if (!val) {

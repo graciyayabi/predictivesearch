@@ -178,16 +178,10 @@
                         <field id="enable_page">1</field>
                     </depends>
                 </field>
-                <field id="enable_suggestions" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Enable Suggestions</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="nb_of_suggestions_count" translate="label comment" type="text" sortOrder="32" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <validate>required-entry validate-digits validate-not-negative-number validate-digits-range digits-range-1-30</validate>
-                    <label>Number of Suggestions Count</label>
-                    <depends>
-                        <field id="enable_suggestions">1</field>
-                    </depends>
+                 <field id="excluded_pages" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Exclude Pages</label>
+                    <frontend_model>Thecommerceshop\Predictivesearch\Block\Adminhtml\Form\Field\Autocomplete\CustomPages</frontend_model>
+                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
                 </field>
                   <field id="minimum_char_length" translate="label comment" type="text" sortOrder="32" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Minimum query length</label>
