@@ -32,7 +32,7 @@ define(
             
             $( document ).ready(function() {
                 if (queryParam) {
-                    productResult.performSearch(queryParam, page, typsenseClient, filterValue,sortParam);
+                    productResult.performSearch(queryParam, page, typsenseClient, filterValue);
                 }
             });
 

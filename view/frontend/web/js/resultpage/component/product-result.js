@@ -53,7 +53,7 @@ define(
         if (urlParams.get('page')) {
             pageParam = urlParams.get('page');
         }
-        let sortParam = '';
+
         let selectedFilters = [];
         let selectedIndex = [];
         let filterParam = [];
@@ -71,9 +71,7 @@ define(
         let productCount = 0;
         let loadParams = null;
         $.each(facet, function (key, val) {
-           // console.log(val);
             facetArr.push(val.filterAttribute);
-            //facetArr.push(val.facet);
         });
     
         let facetParam = facetArr.toString();
@@ -186,7 +184,7 @@ define(
                 if (requestQuery) {
                     searchParameters.query_by = searchAttributes;
                     requestQuery = requestQuery.slice(0, -2);
-                    if ( (tmin && tmax)) {
+                    if (SLIDER == 1 && (tmin && tmax)) {
                         requestQuery = requestQuery+'&& price:['+tmin+'..'+tmax+']';
                     }
                 } else {
@@ -195,9 +193,9 @@ define(
                     }
                 }
 
-                searchParameters.filter_by = requestQuery+&&product_status:1;
+                searchParameters.filter_by = requestQuery;
 
-                if (priceFilter ) {
+                if (priceFilter && SLIDER == 1) {
                     priceFilter = priceFilter.split('-');
                     let multiRequestQuery = '';
                     if (SLIDER != 1) {
@@ -215,7 +213,6 @@ define(
        
                 if (sortQuery) {
                     searchParameters.sort_by = sortQuery;
-                    
                 }
 
                 if (SEMANTIC_SEARCH == 1) {
@@ -413,7 +410,7 @@ define(
                                             <div class="product_item_wrapper">
                                                 <div class="item_name">${name}</div>
                                                 <div class="item_sku">SKU: ${sku}</div>
-                                                <div class="item_price">${CURRENCY+priceUtils.formatPriceLocale(price)}</div>
+                                                <div class="item_price">${CURRENCY+priceUtils.formatPrice(price)}</div>
                                             </div>
                                         </div>
                                     </a>
@@ -478,8 +475,6 @@ define(
                     onPageClick: function (event, page) {
                         if (page > 1) {
                             updateParam.updateParams(filterParam, null,page);
-                        }else{
-                            updateParam.updateParams(filterParam, null,page=1);
                         }
                         productSearch(keyword, page, typsenseClient);
                     }
@@ -497,7 +492,7 @@ define(
                 let slValues = filterParam[key].toString().split(',');
                 let slHtml = '';
                 $.each(slValues, function(itemkey, val) {
-                    if ((key == 'price' ) && val != '') {
+                    if ((key == 'price' && SLIDER == 1) && val != '') {
                         val = val.split('..');
                         val = CURRENCY+val[0]+'-'+CURRENCY+val[1];
                     }
@@ -578,26 +573,23 @@ define(
             let filterHtml = '';
             searchOptionFilter(filterArray)
             $.each(filterArray, function (key, item) {
-              
                 let condition = true;
                 let itemOptionsCondition = false;
                 let itemOptions = 2;
-                filterHtml = renderFilterHtml(item,item.counts.length, false, item.field_name);
+                filterHtml = renderFilterHtml(item, 2, false, item.field_name);
                 let itemLabel = item.field_name.toUpperCase();
-            
                 $.each(facet, function (key, value) {
                     if (item.field_name == value.filterAttribute) {
                         itemLabel = value.fieldName;
                         itemOptions = value.filterOption;
-                        itemFacetType =  value.facet;                    }
+                    }
                 });
-                 if (item.counts.length <= 2) {
+                if (item.counts.length <= 2) {
                     condition = false;
                 }
                 if (itemOptions == 1) {
                     itemOptionsCondition = true;
                 }
-              // itemFacetType = true;
                 if (filterHtml) {
                     html += `<div class="filter_main_test" id="${item.field_name}">
                     <span class="item_label">${itemLabel}</span>
@@ -606,11 +598,6 @@ define(
                             <div class="search_bar_option">
                                 <input class="search_option_filter" data-attr="${item.field_name}" type="search" id="search_filter_${item.field_name}" placeholder="Search by option">
                             </div><br></br>` : ''}
-                              ${itemFacetType ? `
-                            <div class="search_bar_facet">
-                                <input class="search_option_filter" data-attr="${itemFacetType}" type="search" id="search_facet_${itemFacetType}" placeholder="${itemFacetType}">
-                            </div><br></br>` : ''}
-                        
                         <div id="filtermore_attribute_${item.field_name}" class="filter_check">${filterHtml}</div>
                         <div class="read_more_less_buttons">
                         ${condition ? `<button data-info="${item.field_name}" data-count="${item.counts.length}" data-toggle-state="more" id="toggle_${item.field_name}" class="read_toggle_link">Read More</button>` : ''}
@@ -632,7 +619,10 @@ define(
                 });
             }
     
-
+            if (SLIDER == 1) {
+                $('#price').html('')
+                priceSlider(filterArray);
+            }
             $(document).on('click', '.read_toggle_link', function(e) {
                 let $button = $(this);
                 let itemId = $button.data('info');
@@ -650,7 +640,7 @@ define(
                 $('#toggle_' + itemId).attr('data-toggle-state', 'less');
                 $('#toggle_' + itemId).removeClass('read_toggle_link');
                 $('#toggle_' + itemId).addClass('read_less');
-                var filterHtml = renderFilterHtml(singleObjectItemData, itemCount, isReadMore, itemId,itemFacetType);
+                var filterHtml = renderFilterHtml(singleObjectItemData, itemCount, isReadMore, itemId);
                 $('#filtermore_attribute_' + itemId).html(filterHtml);
                 $('#toggle_'+itemId).css("display","block");
             });
@@ -699,7 +689,7 @@ define(
                 filterContainers.forEach(filterContainer => {
                     filterContainer.addEventListener('click', function(e) {
                         $('#product-pagination').twbsPagination('destroy');
-                        if (e.target.type === 'checkbox'  ) {
+                        if (e.target.type === 'checkbox') {
                             var checkField = document.getElementById(e.target.id);
                             if (checkField) {
                                 let attributeFieldname = checkField.getAttribute('data-typename');
@@ -743,51 +733,6 @@ define(
                                 productSearch(keyword, 1, typsenseClient, filterParam);
                             }
                         }
-                        else{
-                            if(e.target.type === 'radio'){
-                                   var checkField = document.getElementById(e.target.id);
-                          if (checkField) {
-                              let attributeFieldname = checkField.getAttribute('data-typename');
-                              if (checkField.checked) {
-                                  checkField.setAttribute("checked", "checked");
-                                  if (filterParam[attributeFieldname]) {
-                                      filterParam[attributeFieldname] = e.target.id;
-                                  } else {
-                                      filterParam[attributeFieldname] = e.target.id;
-                                  }
-                                 console.log(filterParam);
-                                  if($.inArray(attributeFieldname, selectedFilters) === -1) {
-                                      stableContent = $('#'+attributeFieldname)[0].outerHTML;
-                                      selectedFilters.push({
-                                          key:attributeFieldname,
-                                          content:stableContent
-                                      });
-                                  }
-
-                                  /*if($.inArray(e.target.id, selectedIndex) === -1) {
-                                      selectedIndex.push(e.target.id);
-                                  } */
-
-                              } else {
-                                  checkField.removeAttribute('checked');
-                                  const currentarray = filterParam[attributeFieldname].toString().split(',');
-                                  currentarray.splice($.inArray(e.target.id, currentarray), 1);
-                                  filterParam[attributeFieldname] = currentarray.toString();
-
-                                  stableContent = $('#'+attributeFieldname)[0].outerHTML;
-                                  const index = selectedIndex.indexOf(e.target.id);
-                                  if (index > -1) {
-                                      selectedIndex.splice(index, 1);
-                                  }
-                                  selectedFilters.push({
-                                      key:attributeFieldname,
-                                      content:stableContent
-                                  });
-                              }
-                              productSearch(keyword, 1, typsenseClient, filterParam);
-                          }
-                          }
-                          }
                     });
                 });
             }
@@ -800,32 +745,16 @@ define(
          * @returns 
          */
         function renderFilterHtml(item, maxItems = 2, isReadMore = true, fieldName) {
-              $.each(facet, function (key, value) {
-                    if (fieldName == value.filterAttribute) {
-                        itemFacetType =  value.facet;                    
-                    }
-                 });
-
             let html = '';
-            let counts = item.counts;
+            let counts = item ? item.counts.slice(0, maxItems) : item.counts.slice(0, 2);
             $.each(counts, function (itemkey, itemValue) {
-                console.log(itemFacetType);
-                if (itemValue.value && itemFacetType =='disjunctive' ) {
+                if (itemValue.value) {
                     html += `
                         <div class="form-check col-md-12 filter_${item.field_name}">
                         <input type="checkbox" class="form-check-input rangeCheck" name="[${item.field_name}]" id="${itemValue.value}" ${$.inArray(itemValue.value, selectedIndex) != -1 ? 'checked' : 'null'}  data-range="${itemValue.value}" data-typename="${item.field_name}" readonly="true">
                         <label class="form-check-label" for="${itemValue.value}">${itemValue.value} (${itemValue.count})</label>
                         </div>
                     `;
-                }
-                else if (itemValue.value && itemFacetType =='conjunctive'){
-                     html += `
-                        <div class="form-check col-md-12 filter_${item.field_name}">
-                        <input type="radio" class="form-check-input radioCheck" name="[${item.field_name}]" id="${itemValue.value}" data-range="${itemValue.value}" data-typename="${item.field_name}" readonly="true">
-                        <label class="form-check-label" for="${itemValue.value}">${itemValue.value} (${itemValue.count})</label>
-                        </div>
-                    `;
-
                 }
             });
             return html;
@@ -927,8 +856,8 @@ define(
             let expandItems = true;
             let itemData = item.counts;
             if (!filterKeyword) {
-                expandItems = true;
-                itemData = item.counts;
+                expandItems = false;
+                itemData = item.counts.slice(0, 2);
             }
             $.each(itemData, function (itemkey, itemValue) {
                 if (itemValue.value) {
@@ -991,7 +920,7 @@ define(
         }
 
         function sliderAction(keyword, filterParamData = null, currentValue = null) {
-            if (location.search) {
+            if (SLIDER == 1 && location.search) {
                 if (!keyword) {
                     keyword = location.search.split('=')[1];
                 }
