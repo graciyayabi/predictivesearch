@@ -189,6 +189,19 @@
                         <field id="enable_suggestions">1</field>
                     </depends>
                 </field>
+                  <field id="minimum_char_length" translate="label comment" type="text" sortOrder="32" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Minimum query length</label>
+                    <validate>validate-digits</validate>
+                    <comment>
+                        <![CDATA[
+                            The minimal number of characters required for a search term before a request is sent to the Typesense API. If set to 0 then  results will be fet>
+                         ]]>
+                    </comment>
+                    <depends>
+                        <field id="enable_frontend">1</field>
+                    </depends>
+                   </field>
+
             </group>
         </section>
             <section id="typesense_products" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -272,112 +285,5 @@
                 </field>
             </group>
         </section>
-    <!--    <section id="additional_section" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
-            <label>Semantic Search</label>
-            <tab>typesense</tab>
-            <resource>Thecommerceshop_Predictivesearch::config_typesense</resource>
-            <group id="semantic" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Semantic Search</label>
-                <field id="enable_semantic" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Enable</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="enable_hybrid" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Enable Hybrid Search</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <depends>
-                        <field id="enable_semantic">1</field>
-                    </depends>
-                </field>
-                <field id="integration_types" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Integration Types</label>
-                    <source_model>Thecommerceshop\Predictivesearch\Model\Source\SemanticApiTypes</source_model>
-                    <depends>
-                        <field id="enable_semantic">1</field>
-                    </depends>
-                </field>
-                <field id="sbert_type" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>S-BERT Model</label>
-                    <source_model>Thecommerceshop\Predictivesearch\Model\Source\SbertModel</source_model>
-                     <depends>
-                        <field id="integration_types">1</field>
-                        <field id="enable_semantic">1</field>
-                    </depends>
-                </field>
-                <field id="gte_type" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>GTE Model</label>
-                    <source_model>Thecommerceshop\Predictivesearch\Model\Source\GteModel</source_model>
-                     <depends>
-                        <field id="integration_types">2</field>
-                        <field id="enable_semantic">1</field>
-                    </depends>
-                </field>
-                <field id="embedding_field" translate="label" type="multiselect" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Field to be Embedded</label>
-                    <source_model>Thecommerceshop\Predictivesearch\Model\Source\EmbededFields</source_model>
-                    <validate>validate-select</validate>
-                    <depends>
-                        <field id="integration_types" separator="|">1|2</field>
-                        <field id="enable_semantic">1</field>
-                    </depends>
-                </field>
-                <field id="support" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Support Section</label>
-                    <frontend_model>Thecommerceshop\Predictivesearch\Block\Adminhtml\System\Config\Advanced</frontend_model>
-                    <attribute type="shared">1</attribute>
-                     <depends>
-                        <field id="integration_types" separator="|">3|4|5|6|7</field>
-                        <field id="enable_semantic">1</field>
-                    </depends>
-                </field>
-            </group>
-        </section>
-        <section id="typesense_synonyms" translate="label" type="text" sortOrder="66" showInDefault="1" showInWebsite="1" showInStore="1">
-            <label>Synonyms</label>
-            <tab>typesense</tab>
-            <resource>Thecommerceshop_Predictivesearch::config_typesense</resource>
-            <group id="synonyms_group" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Synonyms</label>
-                <field id="enable_synonyms" translate="label comment" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Enable Synonyms Management</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="synonyms" translate="label comment" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Synonyms</label>
-                     <frontend_model>Thecommerceshop\Predictivesearch\Block\Adminhtml\Form\Field\Synonyms\Synonyms</frontend_model>
-                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
-                    <depends>
-                        <field id="enable_synonyms">1</field>
-                    </depends>
-                </field>
-                <field id="oneway_synonyms" translate="label comment" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>One-way Synonyms</label>
-                    <frontend_model>Thecommerceshop\Predictivesearch\Block\Adminhtml\Form\Field\Synonyms\OnewaySynonyms</frontend_model>
-                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
-                    <depends>
-                        <field id="enable_synonyms">1</field>
-                    </depends>
-                </field>
-            </group>
-        </section>
-        <section id="typotolerance" translate="label" type="text" sortOrder="66" showInDefault="1" showInWebsite="1" showInStore="1">
-            <label>Typo Tolerance</label>
-            <tab>typesense</tab>
-            <resource>Thecommerceshop_Predictivesearch::config_typesense</resource>
-            <group id="typotolerance_group" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Typo Tolerance</label>
-                <field id="enable_typotolerance" translate="label comment" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Enable Typo Tolerance</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="word_length" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <validate>validate-digits</validate>
-                    <label>Minimum word length</label>
-                    <depends>
-                        <field id="enable_typotolerance">1</field>
-                    </depends>
-                </field>
-            </group>
-        </section> -->
-    </system>
+       </system>
 </config>

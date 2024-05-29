@@ -280,10 +280,11 @@ class ProductDataProcessor
                     }
     
                 }
-
+/*
                 if ($this->configData->isCronEnbaled() || $mode == 'cron') {
                     $this->queueProcessor->processProductQueue($prdCollection, $indexName);
-                } else {
+                } else { */
+                
                     $prdCollection = implode(PHP_EOL, $prdCollection);
                     //sync typesense products here...
                     $response = $this->typeSenseApi->importCollectionData($indexName, $prdCollection);
@@ -291,7 +292,7 @@ class ProductDataProcessor
                     //log response
                     $this->logger->error($response);
                     //error handling section need to be implemented here....
-                }
+               // }
             } catch (Exception $e) {
                 $this->logger->error($e->getMessage());
             }
@@ -325,7 +326,7 @@ class ProductDataProcessor
     {
         $response = [];
         $stockStatus = false;
-        $stockQty = null;
+        $stockQty = 0;
         $stock = $this->generalModel->getStockInfo($productId);
         if ($stock) {
             $stockStatus = $stock->getIsInStock();
@@ -465,6 +466,7 @@ class ProductDataProcessor
                 'short_description' => $this->removeHtmlTags($product->getShortDescription()),
                 'price_search' => round((float)$price, 2),
             ];
+            print_r($response); exit;
             $productArray = array_merge($finalAtrArray, $response);
             return $productArray;
         }

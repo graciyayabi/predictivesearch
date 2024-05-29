@@ -64,7 +64,7 @@ class ProductSchema
             ['name' => 'rating_summary', 'type' => TypesenseTypes::STRING, 'sort'  => true],
             ['name' => 'special_from_date', 'type' => TypesenseTypes::STRING, 'sort'  => true],
             ['name' => 'special_to_date', 'type' => TypesenseTypes::STRING, 'sort'  => true],
-            ['name' => 'price', 'type' => TypesenseTypes::INTEGER, 'facet' => true,'sort'  => true],
+            ['name' => 'price', 'type' => TypesenseTypes::FLOAT, 'facet' => true,'sort'  => true],
             ['name' => 'bestseller', 'type' => TypesenseTypes::STRING, 'sort'  => true],
             ['name' => 'small_image', 'type' => TypesenseTypes::AUTO],
             ['name' => 'category_ids', 'type' => TypesenseTypes::ARRAY_STRTING, 'facet' => true],

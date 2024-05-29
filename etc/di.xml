@@ -17,4 +17,5 @@
      <preference for="Thecommerceshop\Predictivesearch\Model\Api\TypesenseSearchRepositoryInterface" type="Thecommerceshop\Predictivesearch\Model\TypesenseSearchRepository" />
     <preference for="Thecommerceshop\Predictivesearch\Model\Api\Data\TypesenseSearchInterface" type="Thecommerceshop\Predictivesearch\Model\Data\TypesenseSearch" />
     <preference for="Thecommerceshop\Predictivesearch\Model\Api\Data\TypesenseSearchResultsInterface" type="Magento\Framework\Api\SearchResults" />
+    <preference for="Magento\Framework\HTTP\Client\Curl" type="Thecommerceshop\Predictivesearch\Rewrite\Framework\HTTP\Client\Curl" />
 </config>

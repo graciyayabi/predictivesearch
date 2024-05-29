@@ -123,10 +123,10 @@ define(
                                                 <div class="product-image-div">
                                                     <img src="${image}" class="product-image"/>
                                                 </div>
-                                                <div>
-                                                    <div>${name}</div>
-                                                    <div>Sku: ${sku}</div>
-                                                    <div >${priceUtils.formatPrice(price)}</div>
+                                                <div class="predictive-product_container">
+                                                    <div class="predictive-product_heading">${name}</div>
+                                                    <div class="predictive-product_sku">Sku: ${sku}</div>
+                                                    <div class="predictive-product_price">${CURRENCY+priceUtils.formatPriceLocale(price)}</div>
                                                 </div>
                                             </div>
                                         </a>

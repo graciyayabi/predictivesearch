@@ -10,8 +10,9 @@ define([
     'Magento_Catalog/js/price-utils',
     'Thecommerceshop_Predictivesearch/js/component/add-to-wishlist',
     'Thecommerceshop_Predictivesearch/js/component/add-to-compare',
-    'Thecommerceshop_Predictivesearch/js/resultpage/component/price'
-], function ($, ui, Component, SearchConfig, twbsPagination, addTOCart, urlFormatter, ko, priceUtils, addToWishList, addToCompare, priceComponent) {
+    'Thecommerceshop_Predictivesearch/js/resultpage/component/price',
+    'Thecommerceshop_Predictivesearch/js/component/updateParam',
+], function ($, ui, Component, SearchConfig, twbsPagination, addTOCart, urlFormatter, ko, priceUtils, addToWishList, addToCompare, priceComponent, updateParam) {
     'use strict';
 
     const INDEX_PERFIX = typesenseConfig.general.indexprefix;
@@ -54,6 +55,12 @@ define([
     let priceSlide = null;
     let currentPriceFilter = null;
     let requestParams = null;
+    let loadParams = null;
+    let pageParam = 1;
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('page')) {
+        pageParam = urlParams.get('page');
+    }
 
     let facet = typesenseConfig.search_result.search_filters;
     $.each(facet, function (key, val) {
@@ -62,15 +69,31 @@ define([
 
     let facetParam = facetArr.toString();
     let isSlide = false;
-    sliderAction();
+    $(document).ready(function() {
+        loadParams = location.search.slice(location.search.indexOf('&&') + 2);
+        let filterparamArr = [];
+        loadParams.split('&&').forEach(function(param) {
+            let stringArr = param.split(':=');
+            if (stringArr[1] != undefined) {
+                let filterText = stringArr[1].replace("%20", " ");
+                filterparamArr[stringArr[0]] = filterText;
+            }
+        });
+        filterParam = filterparamArr;
+        sliderCategoryAction();
+     });
 
     return Component.extend({
         initialize: function () {
             this._super();
             $("#category_searchbox").on("keyup", function(e) {
+                $('#product_list_pagination').twbsPagination('destroy');
                 keyword = e.target.value;
                 categoryProductSearch(page, keyword, sortQuery, filterParam);
-                sliderAction();
+                if (pageParam) {
+                    page = pageParam;
+                }
+                sliderCategoryAction();
             });
             categoryProductSearch(page, keyword, sortQuery, filterParam);
         }
@@ -126,7 +149,7 @@ define([
 
             if (SEMANTIC_SEARCH == 1 && keyword) {
                 searchParameters.query_by = 'embedding';
-                searchParameters.vector_query = 'embedding:([], distance_threshold:0.30)';
+                searchParameters.vector_query = 'embedding:([], k:200';
                 if (HYBRID_SEARCH == 1) {
                     searchParameters.query_by = 'embedding,'+searchAttributes;
                 }
@@ -214,7 +237,7 @@ define([
                 if (searchResults.found > NO_PRODUCTS_PAGE) {
                     $('#product_list_pagination').show();
                     totalPage = searchResults.found/NO_PRODUCTS_PAGE;
-                    totalPage = Math.round(totalPage);
+                    totalPage = Math.ceil(totalPage);
                     if (searchResults.found > NO_PRODUCTS_PAGE && totalPage == 1) {
                         totalPage = 2;
                     }
@@ -400,6 +423,7 @@ define([
                 $('#category_product_result').html(html);
                 renderFilterOptions(searchResults);
                 showSelectedFilter(filterParam);
+                sliderCategoryAction($('#priceRange').val());
 
                 const cartBtn = document.querySelector('#category_product_result');
                 if (cartBtn) {
@@ -432,11 +456,15 @@ define([
             $('#product_list_pagination').twbsPagination({
                 totalPages: totalPage,
                 visiblePages: visiblePage,
+                startPage: parseInt(pageParam),
                 first:false,
                 last:false,
                 prev: '<<',
                 next: '>>',
                 onPageClick: function (event, page) {
+                    if (page > 1) {
+                        updateParam.updateParams(filterParam, null,page);
+                    }
                     categoryProductSearch(page, keyword, sortQuery, filterParam);
                 }
             });
@@ -456,6 +484,10 @@ define([
                 let slValues = filterParam[key].toString().split(',');
                 let slHtml = '';
                 $.each(slValues, function(itemkey, val) {
+                    if ((key == 'price' && SLIDER == 1) && val != '') {
+                        val = val.split('..');
+                        val = CURRENCY+val[0]+'-'+CURRENCY+val[1];
+                    }
                     if (val != '') {
                         slHtml += `<div class="clear_filter_main">
                             <div id="clear-filter">${val}<button id="${key+'-'+val}" class="remove_button">x</button></div>
@@ -483,27 +515,34 @@ define([
                     let selectedId = e.target.id;
                     let selectArr = selectedId.split('-');
                     if (selectArr.length > 1) {
-                        let currentValue = filterParam[selectArr[0]].toString().split(',');
-                        var selectFiled = document.getElementById(selectArr[1]);
-                        selectFiled.removeAttribute('checked');
-                        const index = currentValue.indexOf(selectArr[1]);
-                        if (index > -1) {
-                            currentValue.splice(index, 1);
+                        if (filterParam[selectArr[0]]) {
+                            let currentValue = filterParam[selectArr[0]].toString().split(',');
+                            var selectFiled = document.getElementById(selectArr[1]);
+                            if (selectFiled) {
+                                selectFiled.removeAttribute('checked');
+                            } else {
+                                currentValue.splice(0, 1);
+                            }
+                            const index = currentValue.indexOf(selectArr[1]);
+                            if (index > -1) {
+                                currentValue.splice(index, 1);
+                            }
+                            filterParam[selectArr[0]] = currentValue.toString();
+        
+                            const itemIndex = selectedIndex.indexOf(selectArr[1]);
+                            if (itemIndex > -1) {
+                                selectedIndex.splice(itemIndex, 1);
+                            }
+                            stableContent = $('#'+selectArr[0])[0].outerHTML;
+                            selectedFilters.push({
+                                key:selectArr[0],
+                                content:stableContent
+                            });
                         }
-                        filterParam[selectArr[0]] = currentValue.toString();
-    
-                        const itemIndex = selectedIndex.indexOf(selectArr[1]);
-                        if (itemIndex > -1) {
-                            selectedIndex.splice(itemIndex, 1);
-                        }
-                        stableContent = $('#'+selectArr[0])[0].outerHTML;
-                        selectedFilters.push({
-                            key:selectArr[0],
-                            content:stableContent
-                        });
                     }
-    
+                    updateParam.updateParams(filterParam, 'listing');
                     categoryProductSearch(1, keyword, sortQuery, filterParam);
+                    sliderCategoryAction($('#priceRange').val());
                 };
     
             }
@@ -585,6 +624,16 @@ define([
         });
         
         $('#filter_container').html(html);
+
+         //setting data after refresh
+         for (let key of Object.keys(filterParam)) {
+            let paramValues = filterParam[key].split(',');
+            paramValues.forEach(function(value) {
+                if (document.getElementById(value)) {
+                    document.getElementById(value).setAttribute('checked', 'checked');
+                }
+            });
+        }
         if (SLIDER == 1) {
             $('#price').html('')
             priceSlider(filterArray);
@@ -608,6 +657,7 @@ define([
             $('#toggle_' + itemId).addClass('read_less');
             var filterHtml = renderFilterHtml(singleObjectItemData, itemCount, isReadMore, itemId);
             $('#filtermore_attribute_' + itemId).html(filterHtml);
+            $('#toggle_'+itemId).css("display", "block");
         });
 
         $(document).on('click', '.read_less', function(e) {
@@ -646,7 +696,7 @@ define([
                 selectedFilters = [];
                 selectedIndex = [];
                 requestParams = null;
-                sliderAction();
+                sliderCategoryAction();
                 $('#clear_all').hide();
                 categoryProductSearch(1, keyword, sortQuery,  filterParam, null);
             };
@@ -679,7 +729,7 @@ define([
                                 if($.inArray(e.target.id, selectedIndex) === -1) {
                                     selectedIndex.push(e.target.id);
                                 }
-
+                                updateParam.updateParams(filterParam, 'listing');
                             } else {
                                 checkField.removeAttribute('checked');
                                 if (filterParam[attributeFieldname]) {
@@ -697,7 +747,9 @@ define([
                                         content:stableContent
                                     });
                                 }
+                                updateParam.updateParams(filterParam, 'listing');
                             }
+                            sliderCategoryAction();
                             categoryProductSearch(1, keyword, sortQuery, filterParam);
                         }
                    }
@@ -755,7 +807,13 @@ define([
             `;
             return html;
         }
-        $.each(item.counts, function (itemkey, itemValue) {
+        let expandItems = true;
+        let itemData = item.counts;
+        if (!filterKeyword) {
+            expandItems = false;
+            itemData = item.counts.slice(0, 2);
+        }
+        $.each(itemData, function (itemkey, itemValue) {
             if (itemValue.value) {
                 if (itemValue.value && $.inArray(itemValue.value, filteredArray) > -1 && item.field_name == filterId ) {
                     html += `
@@ -767,6 +825,11 @@ define([
                 }
             }
         });
+        if (!expandItems) {
+            html = html+`<div class="read_more_less_buttons">
+                <button data-info="${item.field_name}" data-count="${item.counts.length}" data-toggle-state="more" id="toggle_${item.field_name}" class="read_toggle_link">Read More</button>
+            </div>`
+        }
         return html;
     }
 
@@ -809,23 +872,45 @@ define([
         }
     }
 
-    function sliderAction() {
+    function sliderCategoryAction(currentValue = null) {
         if (SLIDER == 1) {
-            let priceData = priceComponent.sliderPrice($('#category_searchbox').val(), 'listing', requestParams);
+            let priceData = priceComponent.sliderPrice($('#category_searchbox').val(), 'listing', filterParam);
             priceData.then((value) => {
-                minValue = value.min;
-                maxValue = value.max;
+                if (currentValue) {
+                    currentValue = currentValue.split('-');
+                    minValue = $.trim(currentValue[0]);
+                    maxValue = $.trim(currentValue[1]);
+                } else {
+                    minValue = value.min;
+                    maxValue = value.max;
+                }
+
+                if (window.location.search) {
+                    $.each(window.location.search.split('&&'), function (key, val) {
+                       if (val.indexOf('price') > -1) {
+                            val = val.substring(val.indexOf(":=") + 2);
+                            val = val.split('..');
+                            minValue = val[0];
+                            maxValue = val[1];
+                            $("#priceRange").val(minValue + " - " + maxValue);
+                        }
+                    });
+                }
+                
                 if (value.min != undefined && value.max != undefined) {
                     $("#price-range").slider({
                         step: 1,
                         range: true, 
-                        min: minValue, 
-                        max: maxValue, 
-                        values: [minValue, maxValue], 
+                        min: parseInt(minValue), 
+                        max: parseInt(maxValue), 
+                        values: [parseInt(minValue), parseInt(maxValue)], 
                         slide: function(event, ui)
                         {
                             isSlide = true;
-                            $("#priceRange").val(ui.values[0] + " ~ " + ui.values[1]);
+                            $("#priceRange").val(ui.values[0] + " - " + ui.values[1]);
+                            let priceParam = ui.values[0]+".."+ui.values[1];
+                            filterParam['price'] = priceParam;
+                            updateParam.updateParams(filterParam, 'listing');
                             categoryProductSearch(1,$('#category_searchbox').val(), '', filterParam,ui.values[0]+'-'+ui.values[1]);
                         }
                     });

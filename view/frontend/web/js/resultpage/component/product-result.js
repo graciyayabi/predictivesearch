@@ -186,7 +186,7 @@ define(
                 if (requestQuery) {
                     searchParameters.query_by = searchAttributes;
                     requestQuery = requestQuery.slice(0, -2);
-                    if (SLIDER == 1 && (tmin && tmax)) {
+                    if ( (tmin && tmax)) {
                         requestQuery = requestQuery+'&& price:['+tmin+'..'+tmax+']';
                     }
                 } else {
@@ -197,7 +197,7 @@ define(
 
                 searchParameters.filter_by = requestQuery;
 
-                if (priceFilter && SLIDER == 1) {
+                if (priceFilter ) {
                     priceFilter = priceFilter.split('-');
                     let multiRequestQuery = '';
                     if (SLIDER != 1) {
@@ -413,7 +413,7 @@ define(
                                             <div class="product_item_wrapper">
                                                 <div class="item_name">${name}</div>
                                                 <div class="item_sku">SKU: ${sku}</div>
-                                                <div class="item_price">${CURRENCY+priceUtils.formatPrice(price)}</div>
+                                                <div class="item_price">${CURRENCY+priceUtils.formatPriceLocale(price)}</div>
                                             </div>
                                         </div>
                                     </a>
@@ -497,7 +497,7 @@ define(
                 let slValues = filterParam[key].toString().split(',');
                 let slHtml = '';
                 $.each(slValues, function(itemkey, val) {
-                    if ((key == 'price' && SLIDER == 1) && val != '') {
+                    if ((key == 'price' ) && val != '') {
                         val = val.split('..');
                         val = CURRENCY+val[0]+'-'+CURRENCY+val[1];
                     }
@@ -584,19 +584,19 @@ define(
                 let itemOptions = 2;
                 filterHtml = renderFilterHtml(item,item.counts.length, false, item.field_name);
                 let itemLabel = item.field_name.toUpperCase();
-               
-                if (item.counts.length <= 2) {
-                    condition = false;
-                }
-                if (itemOptions == 1) {
-                    itemOptionsCondition = true;
-                }
+            
                 $.each(facet, function (key, value) {
                     if (item.field_name == value.filterAttribute) {
                         itemLabel = value.fieldName;
                         itemOptions = value.filterOption;
                         itemFacetType =  value.facet;                    }
                 });
+                 if (item.counts.length <= 2) {
+                    condition = false;
+                }
+                if (itemOptions == 1) {
+                    itemOptionsCondition = true;
+                }
               // itemFacetType = true;
                 if (filterHtml) {
                     html += `<div class="filter_main_test" id="${item.field_name}">
@@ -632,10 +632,7 @@ define(
                 });
             }
     
-            if (SLIDER == 1) {
-                $('#price').html('')
-                priceSlider(filterArray);
-            }
+
             $(document).on('click', '.read_toggle_link', function(e) {
                 let $button = $(this);
                 let itemId = $button.data('info');
@@ -812,8 +809,7 @@ define(
             let html = '';
             let counts = item.counts;
             $.each(counts, function (itemkey, itemValue) {
-                console.log(itemValue);
-                console.log(itemkey);
+                console.log(itemFacetType);
                 if (itemValue.value && itemFacetType =='disjunctive' ) {
                     html += `
                         <div class="form-check col-md-12 filter_${item.field_name}">
@@ -995,7 +991,7 @@ define(
         }
 
         function sliderAction(keyword, filterParamData = null, currentValue = null) {
-            if (SLIDER == 1 && location.search) {
+            if (location.search) {
                 if (!keyword) {
                     keyword = location.search.split('=')[1];
                 }

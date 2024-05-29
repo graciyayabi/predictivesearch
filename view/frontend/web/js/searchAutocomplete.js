@@ -1,15 +1,14 @@
-define(
-    [
-        'jquery', 
-        'uiComponent', 
-        'Thecommerceshop_Predictivesearch/js/config/typesenseSearchConfig',
-        'Thecommerceshop_Predictivesearch/js/component/products',
-        'Thecommerceshop_Predictivesearch/js/component/category',
-        'Thecommerceshop_Predictivesearch/js/component/pages',
-        'Thecommerceshop_Predictivesearch/js/component/suggestions',
-        'mage/url',
-        'ko'
-    ], function ($, Component, searchConfig, productComponent, categoryComponent, pageComponent, suggestionComponent, url, ko) {
+define([
+    'jquery', 
+    'uiComponent', 
+    'Thecommerceshop_Predictivesearch/js/config/typesenseSearchConfig',
+    'Thecommerceshop_Predictivesearch/js/component/multi-search',
+    'Thecommerceshop_Predictivesearch/js/component/products',
+    'Thecommerceshop_Predictivesearch/js/component/category',
+    'Thecommerceshop_Predictivesearch/js/component/pages',
+    'mage/url',
+    'ko'
+], function ($, Component, searchConfig, multiSearchComponent, productComponent, categoryComponent, pageComponent, url, ko) {
     'use strict';
     
     let keyword = '';
@@ -17,6 +16,7 @@ define(
     let showPage = false;
     let showSuggestion = false;
     let searchUrl = BASE_URL+'catalogsearch/result/?q=';
+    let mimimumqueryLength = typesenseConfig.auto_complete.minimum_char_length;
     //initialize the typsense client
     const typsenseClient = searchConfig.createClient(typesenseConfig);
     const CATEGORY_SECTION = typesenseConfig.auto_complete.category_enabled;
@@ -54,18 +54,13 @@ define(
             //search action
             $( "#searchbox" ).on("keyup", function(e) {
                 keyword = e.target.value;
-                if (keyword) {
+                var keywordlength = keyword.length;
+                if (keyword && (keywordlength >= mimimumqueryLength) ) {
                     //enabling the search popup
                     $("#search_result").css("display", "flex");
                     
-                    //bind product data
-                    productComponent.producSearch(keyword, typsenseClient);
-                    //bind category data
-                    categoryComponent.categorySearch(keyword, typsenseClient);
-                    //bind pages data
-                    pageComponent.cmsSearch(keyword, typsenseClient);
-                    //bind suggestions
-                    suggestionComponent.suggestions(keyword, typsenseClient);
+                    //bind product, category and page data and suggestion data
+                    multiSearchComponent.multiSearch(keyword, typsenseClient);
                 } else {
                     $('#product_section').html('');
                     $('#cms_section').html('');

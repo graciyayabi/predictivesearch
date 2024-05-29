@@ -264,6 +264,11 @@ class ConfigData
      */
     private const INTEGRATION_TYPE = 'additional_section/semantic/integration_types';
 
+
+    /***
+     * Minimum char length
+     */
+    private const MINIMUM_LENGTH = 'typesense_autocomplete/autocomplete/minimum_char_length';
     /**
      * @var ScopeConfigInterface
      */
@@ -594,7 +599,11 @@ class ConfigData
         }
         return [];
     }
+    public function getMinimumChar(){
+        
+        return $this->getSystemConfigValues(self::MINIMUM_LENGTH);
 
+    }
     /**
      * Enable Synonyms
      *

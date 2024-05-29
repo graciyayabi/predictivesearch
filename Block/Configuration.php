@@ -140,6 +140,7 @@ class Configuration extends Template implements CollectionDataSourceInterface
                 'excluded_page' => $this->configData->getExcludedPages(),
                 'suggestions' => $this->configData->showSuggestions(),
                 'suggestions_count' => $this->configData->getSuggestionsCount(),
+                'minimum_char_length' => $this->configData->getMinimumChar(),
             ],
             'products' => [
                 'attributes' => $this->configData->getProductAttributeConfig(),
