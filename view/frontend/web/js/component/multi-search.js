@@ -56,7 +56,6 @@ define(
                             getProductAttributes(keyword),
                             getCategoryAttributes(keyword),
                             getPageAttributes(keyword),
-                            getQuerySuggestions(keyword)
                         ]
                     }
                     let commonSearchParams = {}
@@ -118,7 +117,7 @@ define(
                 'query_by'  : productSearchAttributes,
                 'per_page'  : PRODUCT_MAX_COUNT,
                 'sort_by'   : ranking,
-                'filter_by' : `storeCode:["${STORE}"]`&&`product_status:1`
+                'filter_by' : `storeCode:["${STORE}"]`
             }            
             if (SEMANTIC_SEARCH) {
                 productSearchParameters.query_by = 'embedding';
