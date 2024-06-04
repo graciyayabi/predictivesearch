@@ -54,7 +54,6 @@ class FacetType extends Select
             ['label' => 'Conjunctive', 'value' => 'conjunctive'],
             ['label' => 'Disjunctive', 'value' => 'disjunctive'],
             ['label' => 'Slider', 'value' => 'slider'],
-            ['label' => 'Price Range', 'value' => 'priceRange'],
         ];
     }
 }

@@ -126,9 +126,9 @@ define(
          */
         function productSearch (keyword, page, typsenseClient, filterValue, sortQuery, priceFilter, perPage = null ) {
             priceSlide = priceFilter;
-            $( document ).ready(function() {
-                $("#loader").remove();
-            });
+            // $( document ).ready(function() {
+            //     $("#loader").remove();
+            // });
             try {
                 let searchAttributes = SEARCHBLE_ATTRIBUTES.map((item) => {
                     if (item.search == 1) {
@@ -293,7 +293,7 @@ define(
                                 <option value="${item.sortAttribute+'-'+item.sortDirection}">${item.fieldName}</option>
                             `;
                         });
-                        let sortDropDown = `<select id="product_sort" name="product_sort">
+                        let sortDropDown = `<span class="sort_by">Sort By</span><select id="product_sort" name="product_sort">
                             <option value="">Select Option </option>
                                 ${sOptions}
                             </select>`;
@@ -732,6 +732,32 @@ define(
                                 productSearch(keyword, 1, typsenseClient, filterParam);
                             }
                         }
+                                                else{
+                            if(e.target.type === 'radio'){
+                                   var checkField = document.getElementById(e.target.id);
+                          if (checkField) {
+                              let attributeFieldname = checkField.getAttribute('data-typename');
+                              if (checkField.checked) {
+                                  checkField.setAttribute("checked", "checked");
+                                  if (filterParam[attributeFieldname]) {
+                                      filterParam[attributeFieldname] = e.target.id;
+                                  } else {
+                                      filterParam[attributeFieldname] = e.target.id;
+                                  }
+                                 console.log(filterParam);
+                                  if($.inArray(attributeFieldname, selectedFilters) === -1) {
+                                      stableContent = $('#'+attributeFieldname)[0].outerHTML;
+                                      selectedFilters.push({
+                                          key:attributeFieldname,
+                                          content:stableContent
+                                      });
+                                  }
+
+                              } 
+                              productSearch(keyword, 1, typsenseClient, filterParam);
+                          }
+                          }
+                          }
                     });
                 });
             }
@@ -743,17 +769,32 @@ define(
          * @param {*} item 
          * @returns 
          */
-        function renderFilterHtml(item, maxItems = 2, isReadMore = true, fieldName) {
+        function renderFilterHtml(item, maxItems = 6, isReadMore = true, fieldName) {
+            $.each(facet, function (key, value) {
+                    if (fieldName == value.filterAttribute) {
+                        itemFacetType =  value.facet;                    
+                    }
+             });
             let html = '';
             let counts = item ? item.counts.slice(0, maxItems) : item.counts.slice(0, 2);
+
             $.each(counts, function (itemkey, itemValue) {
-                if (itemValue.value) {
+                   if (itemValue.value && itemFacetType =='disjunctive' ) {
                     html += `
                         <div class="form-check col-md-12 filter_${item.field_name}">
                         <input type="checkbox" class="form-check-input rangeCheck" name="[${item.field_name}]" id="${itemValue.value}" ${$.inArray(itemValue.value, selectedIndex) != -1 ? 'checked' : 'null'}  data-range="${itemValue.value}" data-typename="${item.field_name}" readonly="true">
                         <label class="form-check-label" for="${itemValue.value}">${itemValue.value} (${itemValue.count})</label>
                         </div>
                     `;
+                }
+                else if (itemValue.value && itemFacetType =='conjunctive'){
+                     html += `
+                        <div class="form-check col-md-12 filter_${item.field_name}">
+                        <input type="radio" class="form-check-input radioCheck" name="[${item.field_name}]" id="${itemValue.value}" data-range="${itemValue.value}" data-typename="${item.field_name}" readonly="true">
+                        <label class="form-check-label" for="${itemValue.value}">${itemValue.value} (${itemValue.count})</label>
+                        </div>
+                    `;
+
                 }
             });
             return html;

@@ -738,7 +738,14 @@ class ConfigData
      */
     public function enableSlider()
     {
-        return $this->getSystemConfigValues(self::SLIDER_ENABLED);
+        $filterCollection = $this->getSearchFilters();
+        foreach($filterCollection as $filter){
+            if($filter['facet'] == 'slider' && $filter['filterAttribute'] == 'price'){
+                return 1;
+            }else{
+                return 0;
+            }
+        }
     }
 
     /**
