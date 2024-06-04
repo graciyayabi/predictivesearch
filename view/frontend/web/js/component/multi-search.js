@@ -192,7 +192,7 @@ $('#auto_search_time').html(
                                         <div class="predictive-product_heading">${name}</div>
                                         <div class="predictive-product_sku">Sku: ${sku}</div>
                                         <div class="predictive-product_price" >`;
-                                        if(window.location.href.indexOf("catalogsearch") != -1){
+                                        if(window.location.href != BASE_URL && $("body").hasClass('catalog-product-view') == false){
                                             html+=`$${priceUtils.formatPriceLocale(price)}`;
                                         }
                                         else{

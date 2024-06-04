@@ -15,15 +15,18 @@
 <div class="search-result-page">
     <div id="search_result_page" class="search_result_page">
         <div class="content_wrapper">
-            <div id="product_count"></div>
-            <div class="search-box">
+             <div class="search-box">
                 <input type="text" 
                     placeholder="<?= $escaper->escapeHtmlAttr(__('search here...')) ?>" 
                     id="search-result-box" class="search-result-box" />
                 <span class="search-btn"></span>
             </div>
+            <div class="search-option-insta">
+            <div id="product_count"></div>
+
             <div id="sort_option"></div>
             <div id="product_display_count"></div>
+        </div>
         </div>
         
         <div id="product_result" class="suggestion_section"></div>
