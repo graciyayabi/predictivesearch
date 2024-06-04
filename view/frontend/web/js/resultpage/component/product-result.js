@@ -364,7 +364,6 @@ define(
                     paginationAction(totalPage, visiblePage, keyword, productCount);
                  
                     $.each(searchResults.hits, function (key, val) {
-                        if (val.document.product_status == 1) {
                             let price = val.document.price;
                             if (val.document.special_price) {
                                 let currentDate = new Date();
@@ -410,7 +409,7 @@ define(
                                             <div class="product_item_wrapper">
                                                 <div class="item_name">${name}</div>
                                                 <div class="item_sku">SKU: ${sku}</div>
-                                                <div class="item_price">${CURRENCY+priceUtils.formatPrice(price)}</div>
+                                                <div class="item_price">${CURRENCY+priceUtils.formatPriceLocale(price)}</div>
                                             </div>
                                         </div>
                                     </a>
@@ -425,12 +424,12 @@ define(
                                     </div></div>
                                 </div>
                             `;
-                        }
+                        
                     });
                     $('#product_result').html(html);
                     renderFilterOptions(searchResults);
                     showSelectedFilter(filterParam)
-                    sliderAction(keyword, filterParam, $('#priceRange').val());
+                    //sliderAction(keyword, filterParam, null);
 
                     const cartBtn = document.querySelector('#product_result');
                     if (cartBtn) {
@@ -575,8 +574,8 @@ define(
             $.each(filterArray, function (key, item) {
                 let condition = true;
                 let itemOptionsCondition = false;
-                let itemOptions = 2;
-                filterHtml = renderFilterHtml(item, 2, false, item.field_name);
+                let itemOptions = 6;
+                filterHtml = renderFilterHtml(item, 6, false, item.field_name);
                 let itemLabel = item.field_name.toUpperCase();
                 $.each(facet, function (key, value) {
                     if (item.field_name == value.filterAttribute) {
@@ -584,7 +583,7 @@ define(
                         itemOptions = value.filterOption;
                     }
                 });
-                if (item.counts.length <= 2) {
+                if (item.counts.length <= 6) {
                     condition = false;
                 }
                 if (itemOptions == 1) {
@@ -597,7 +596,7 @@ define(
                         ${itemOptionsCondition ? `
                             <div class="search_bar_option">
                                 <input class="search_option_filter" data-attr="${item.field_name}" type="search" id="search_filter_${item.field_name}" placeholder="Search by option">
-                            </div><br></br>` : ''}
+                            </div>` : ''}
                         <div id="filtermore_attribute_${item.field_name}" class="filter_check">${filterHtml}</div>
                         <div class="read_more_less_buttons">
                         ${condition ? `<button data-info="${item.field_name}" data-count="${item.counts.length}" data-toggle-state="more" id="toggle_${item.field_name}" class="read_toggle_link">Read More</button>` : ''}
@@ -898,6 +897,7 @@ define(
         function priceSlider(filterArray) {
             const priceArr = filterArray.filter((item) => {
                 if (item.field_name == 'price') {
+                console.log(item);
                     return item.counts;
                 }
             });
@@ -915,7 +915,7 @@ define(
             tmin = minValue;
             
             if (!isSlide) {
-                $("#priceRange").val(minValue + " - " + maxValue);
+                $("#priceRange").val(Math.floor(minValue) + " - " + Math.ceil(maxValue));
             }
         }
 
@@ -934,12 +934,12 @@ define(
                         currentValue = currentValue.split('-');
                         minValue = $.trim(currentValue[0]);
                         maxValue = $.trim(currentValue[1]);
+                        
                     } else {
                         minValue = value.min;
                         maxValue = value.max;
                     }
-
-                    if (window.location.search) {
+           if (window.location.search) {
                         $.each(window.location.search.split('&&'), function (key, val) {
                            if (val.indexOf('price') > -1) {
                                 val = val.substring(val.indexOf(":=") + 2);
@@ -950,6 +950,7 @@ define(
                             }
                         });
                     }
+                    
 
                     $("#price-range").slider({
                         step: 1,
