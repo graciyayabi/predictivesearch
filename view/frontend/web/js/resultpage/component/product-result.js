@@ -626,11 +626,11 @@ define(
             $('.filter_main').toggleClass('hidden-sm').toggleClass('hidden-xs');
             $('#filter_container').addClass('hidden-sm hidden-xs');
             if ($(this).html().trim()[0] === '+')
-                $(this).html('Filter');
+                $(this).html('-');
             else
             $('.filter_main').removeClass('hidden-sm hidden-xs');
             $('#filter_container').removeClass('hidden-sm hidden-xs');
-               $(this).html('Filter');
+               $(this).html('+');
         });
             $(document).on('click', '.read_toggle_link', function(e) {
                 let $button = $(this);
@@ -964,10 +964,14 @@ define(
             }
 
             tmin = minValue;
+            let i = 0;
+            if (!isSlide && i == 0) {
+                console.log(i);
+                 $("#price-range>span:eq(0)").html("<span class='point'>$"+Math.floor(minValue)+"</span>");
+                 $("#price-range>span:eq(1)").html("<span class='point'>$"+Math.ceil(maxValue)+"</span>");
             
-            if (!isSlide) {
-                $("#priceRange").val(Math.floor(minValue) + " - " + Math.ceil(maxValue));
             }
+            i++;
         }
 
         function sliderAction(keyword, filterParamData = null, currentValue = null) {
@@ -1011,13 +1015,18 @@ define(
                         values: [parseInt(minValue), parseInt(maxValue)], 
                         slide: function(event, ui)
                         {
+                            //console.log(ui);
+
+                            // console.log(ui.handleIndex);
+                            ui.handle.innerHTML = '<span class="point">$' + ui.value + '</span>';
+                           // $("#price-range span:nth-child("+ ui.handleIndex +")").html(ui.value);
                             isSlide = true;
                             tmin = ui.values[0];
                             tmax = ui.values[1];
                             let priceParam = ui.values[0]+".."+ui.values[1];
                             filterParam['price'] = priceParam;
                             updateParam.updateParams(filterParam);
-                            $("#priceRange").val(ui.values[0] + " - " + ui.values[1]);
+                            //$("#priceRange").val(ui.values[0] + " - " + ui.values[1]);
                             if (queryParam) {
                                 productSearch($('#search-result-box').val(), 1,searchConfig.createClient(typesenseConfig), '','',ui.values[0]+'-'+ui.values[1]);
                             }
