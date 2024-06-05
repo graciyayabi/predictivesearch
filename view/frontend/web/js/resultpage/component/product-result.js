@@ -622,6 +622,16 @@ define(
                 $('#price').html('')
                 priceSlider(filterArray);
             }
+            $('body').on('click', '#refine-toggle', function () {
+            $('.filter_main').toggleClass('hidden-sm').toggleClass('hidden-xs');
+            $('#filter_container').addClass('hidden-sm hidden-xs');
+            if ($(this).html().trim()[0] === '+')
+                $(this).html('Filter');
+            else
+            $('.filter_main').removeClass('hidden-sm hidden-xs');
+            $('#filter_container').removeClass('hidden-sm hidden-xs');
+               $(this).html('Filter');
+        });
             $(document).on('click', '.read_toggle_link', function(e) {
                 let $button = $(this);
                 let itemId = $button.data('info');
