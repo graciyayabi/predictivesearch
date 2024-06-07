@@ -48,6 +48,7 @@ define(
         const SEMANTIC_SEARCH = typesenseConfig.additional_section.semantic_status;
         const HYBRID_SEARCH = typesenseConfig.additional_section.hybrid_search;
         const urlParams = new URLSearchParams(window.location.search);
+        let refine = 'Refine';
         const queryParam = urlParams.get('q');
         let pageParam = 1;
         if (urlParams.get('page')) {
@@ -92,6 +93,18 @@ define(
             });
             filterParam = filterparamArr;
             sliderAction(location.search.split('=')[1], filterParam); 
+            $('body').on('click', '#refine-toggle', function () {
+            $('.filter_main').toggleClass('hidden-sm').toggleClass('hidden-xs');
+            $('#filter_main').addClass('hidden-sm hidden-xs');
+            if ($(this).html().trim()[0] === '+'){
+                  $(this).html('- ' + refine);
+              }
+            else{
+            $('.filter_main').removeClass('hidden-sm hidden-xs');
+            $('#filter_container').removeClass('hidden-sm hidden-xs');
+               $(this).html('+ ' + refine);
+           }
+        });
         });
 
         return {
@@ -622,16 +635,6 @@ define(
                 $('#price').html('')
                 priceSlider(filterArray);
             }
-            $('body').on('click', '#refine-toggle', function () {
-            $('.filter_main').toggleClass('hidden-sm').toggleClass('hidden-xs');
-            $('#filter_container').addClass('hidden-sm hidden-xs');
-            if ($(this).html().trim()[0] === '+')
-                $(this).html('-');
-            else
-            $('.filter_main').removeClass('hidden-sm hidden-xs');
-            $('#filter_container').removeClass('hidden-sm hidden-xs');
-               $(this).html('+');
-        });
             $(document).on('click', '.read_toggle_link', function(e) {
                 let $button = $(this);
                 let itemId = $button.data('info');

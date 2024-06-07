@@ -20,7 +20,13 @@
         <span class="item_label"><?= $escaper->escapeHtmlAttr(__('Price')) ?></span>
         <div class="slider-box">
             <div id="price-range" class="slider"></div>
-            <input type="text" id="priceRange" readonly>
+           <!-- <input type="text" id="priceRange" readonly> -->
+            <div class="slider-range">
+                
+        <span class="0"></span>
+        <span class="1"></span>
+            </div>
+            
         </div>
         <div id="search-result-component" data-bind="scope:'search-resultcomponent'">
         <!-- ko template: getTemplate() --><!-- /ko -->
@@ -40,6 +46,7 @@
     </div>
     <?php endif; ?>
      <div class="container hidden-sm hidden-xs" id="filter_container"> 
-    </div> 
+    </div>
+   
     </div>
 </div>
