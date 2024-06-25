@@ -997,7 +997,7 @@ catalogsearch-result-index #product_result .product-wrapper-main {
     }
 
 .page-products.page-with-filter.catalogsearch-result-index.page-layout-2columns-left .filter_main.hidden-sm.hidden-xs{
- display:none;
+ display:none !important;
 }
 .page-products.page-with-filter.catalogsearch-result-index.page-layout-2columns-left .filter_main{
 display:block;
@@ -1109,3 +1109,6 @@ width: 95%;
     }
     
     }
+    .filter_main input#priceRange {
+    display: none !important;
+}

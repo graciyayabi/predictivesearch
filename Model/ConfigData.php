@@ -269,6 +269,9 @@ class ConfigData
      * Minimum char length
      */
     private const MINIMUM_LENGTH = 'typesense_autocomplete/autocomplete/minimum_char_length';
+
+
+    private const UNIQUEID ='typesense_general/credentials/unique_id';
     /**
      * @var ScopeConfigInterface
      */
@@ -602,6 +605,11 @@ class ConfigData
     public function getMinimumChar(){
         
         return $this->getSystemConfigValues(self::MINIMUM_LENGTH);
+
+    }
+    public function getUniqueId(){
+        
+        return $this->getSystemConfigValues(self::UNIQUEID);
 
     }
     /**

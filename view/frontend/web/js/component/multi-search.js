@@ -34,8 +34,10 @@ define(
         const SEMANTIC_SEARCH = typesenseConfig.additional_section.semantic_status;
         const HYBRID_SEARCH = typesenseConfig.additional_section.hybrid_search;
         const POPULAR_TERMS = typesenseConfig.search_terms.data;
+        const UNIQUEID = typesenseConfig.general.unique_id;
 
         let excludedPageArr = [];
+        let analyticsURL='https://devbackend.conversionbox.io/';
         if (Object.keys(EXCUDED_PAGE).length >= 1) {
             $.each(EXCUDED_PAGE, function (key, item) {
                 excludedPageArr.push(item.page)
@@ -72,12 +74,45 @@ define(
                             }
 
                         });
+                       hitSearchAnalytics(keyword,searchResults.results)
                     });
                 } catch (error) {
                     console.log(error)
                 }
             }
         };
+         function hitSearchAnalytics(keyword,searchResults) {
+            setTimeout(function () {
+          try {
+          const postData = {
+        uniqueId: UNIQUEID,
+        searchKey: keyword,
+        searchResult: searchResults,
+        sessionId: $.cookie("_conversion_box_track_id")
+       };
+    $.ajax({
+        url: analyticsURL+`api/v1/analytics/autocompleteLog`,
+        type: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify(postData),
+        success: function(data) {
+            if (!data.ok) {
+                    console.log('Error:Network response was not ok');
+                }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error:', error);
+        }
+    });
+
+} catch (error) {
+    console.error('Error:', error);
+}
+       }, 6000);
+
+                    
+                    }
 
         /**
          * 
@@ -323,5 +358,6 @@ $('#auto_search_time').html(
             });
             $('#cms_section').html(html);
         }
+
     }
 );

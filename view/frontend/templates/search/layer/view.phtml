@@ -20,32 +20,12 @@
         <span class="item_label"><?= $escaper->escapeHtmlAttr(__('Price')) ?></span>
         <div class="slider-box">
             <div id="price-range" class="slider"></div>
-           <!-- <input type="text" id="priceRange" readonly> -->
-            <div class="slider-range">
-                
-        <span class="0"></span>
-        <span class="1"></span>
-            </div>
-            
+           <input type="text" id="priceRange" readonly> 
+           
         </div>
-        <div id="search-result-component" data-bind="scope:'search-resultcomponent'">
-        <!-- ko template: getTemplate() --><!-- /ko -->
-        <script type="text/x-magento-init">
-        {
-            "#search-result-component": {
-                "Magento_Ui/js/core/app": {
-                "components": {
-                        "search-resultcomponent": {
-                            "component": "Thecommerceshop_Predictivesearch/js/resultpage/result"
-                        }
-                    }
-                }
-            }
-        }
-        </script>
-    </div>
     <?php endif; ?>
      <div class="container hidden-sm hidden-xs" id="filter_container"> 
+        <div class="filter_main_test" id="price"></div>
     </div>
    
     </div>

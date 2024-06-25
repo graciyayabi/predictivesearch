@@ -16,6 +16,9 @@ define([
     let showPage = false;
     let showSuggestion = false;
     let searchUrl = BASE_URL+'catalogsearch/result/?q=';
+    let cookieName ='_conversion_box_track_id';
+    let sessionID='';
+
     let mimimumqueryLength = typesenseConfig.auto_complete.minimum_char_length;
     //initialize the typsense client
     const typsenseClient = searchConfig.createClient(typesenseConfig);
@@ -41,8 +44,9 @@ define([
         categorySection: ko.observable(showCategory),
         pageSection: ko.observable(showPage),
         suggestionSection: ko.observable(showSuggestion),
-
+ 
         initialize: function () {
+
             var self = this;
             this._super();
          
@@ -50,7 +54,7 @@ define([
             if (typeof typesenseConfig === 'undefined' || !typesenseConfig.general.enabled) {
                 return;
             }
-            
+         this.getSessionID();
             //search action
             $( "#searchbox" ).on("keyup", function(e) {
                 keyword = e.target.value;
@@ -90,5 +94,47 @@ define([
                 }
             });
         },
+     getSessionID: function() {
+    let cookieID =  this.getCookie('_conversion_box_track_id');
+    let storageId = localStorage.getItem('_conversion_box_track_id');
+    
+    if (!cookieID && storageId) {
+        sessionID = storageId;
+        setCookie("_conversion_box_track_id", storageId);
+    } else if (!storageId && cookieID) {
+        sessionID = cookieID;
+        localStorage.setItem("_conversion_box_track_id", cookieID);
+    } else if (!cookieID && !storageId) {
+        sessionID = uuid4();
+        this.setCookie("_conversion_box_track_id", sessionID);
+        localStorage.setItem("_conversion_box_track_id", sessionID);
+    } else {
+        sessionID = cookieID;
+    }
+} ,
+getCookie: function(name){
+        const cookies = document.cookie.split('; ');
+        for (const cookie of cookies) {
+            const [cookieName, cookieValue] = cookie.split('=');
+            if (cookieName === name) {
+                return cookieValue;
+            }
+        }
+        return null;
+    },
+
+
+    setCookie: function(cookieKey, cookieValue) {
+        // Set the session ID in a cookie with a longer expiration time (e.g., 30 days)
+        document.cookie = `${cookieKey}=${cookieValue}; expires=${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString()}; path=/`;
+    },
+
+
+    setLocalStorage: function(storageKey, storageValue)  {
+        // Store the session ID in local storage for persistence
+        localStorage.setItem(storageKey, storageValue);
+    },
+
+
     });
 });

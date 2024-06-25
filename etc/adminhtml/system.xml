@@ -22,6 +22,13 @@
                     </depends>
                     <validate>required-entry</validate>
                 </field>
+                   <field id="node" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Node</label>
+                    <depends>
+                        <field id="enable_frontend">1</field>
+                    </depends>
+                    <validate>required-entry</validate>
+                </field>
                 <field id="search_only_api_key" translate="label" type="password" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Search-only (public) API key</label>
                     <depends>
@@ -65,6 +72,12 @@
                 <field id="highlights" translate="label comment" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Highlights</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="unique_id" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Unique ID</label>
+                    <depends>
+                        <field id="enable_frontend">1</field>
+                    </depends>
                 </field>
             </group>
         </section>

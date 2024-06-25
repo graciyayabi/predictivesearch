@@ -49,7 +49,9 @@ define(
         const HYBRID_SEARCH = typesenseConfig.additional_section.hybrid_search;
         const urlParams = new URLSearchParams(window.location.search);
         let refine = 'Refine';
+        let analyticsURL='https://devbackend.conversionbox.io/';
         const queryParam = urlParams.get('q');
+        const UNIQUEID = typesenseConfig.general.unique_id;
         let pageParam = 1;
         if (urlParams.get('page')) {
             pageParam = urlParams.get('page');
@@ -71,6 +73,7 @@ define(
         let visiblePage = 0;
         let productCount = 0;
         let loadParams = null;
+         const typsenseClient = searchConfig.createClient(typesenseConfig); 
         $.each(facet, function (key, val) {
             facetArr.push(val.filterAttribute);
         });
@@ -92,18 +95,25 @@ define(
                 }
             });
             filterParam = filterparamArr;
-            sliderAction(location.search.split('=')[1], filterParam); 
-            $('body').on('click', '#refine-toggle', function () {
+         //   sliderAction(location.search.split('=')[1], filterParam); 
+        //     $('body').on('click', '#refine-toggle', function () {
+        //     $('.filter_main').toggleClass('hidden-sm').toggleClass('hidden-xs');
+        //     $('#filter_main').addClass('hidden-sm hidden-xs');
+        //     if ($(this).html().trim()[0] === '+'){
+        //           $(this).html('- ' + refine);
+        //       }
+        //     else{
+        //     $('.filter_main').removeClass('hidden-sm hidden-xs');
+        //     $('#filter_container').removeClass('hidden-sm hidden-xs');
+        //        $(this).html('+ ' + refine);
+        //    }
+        // });
+                $('body').on('click', '#refine-toggle', function () {
             $('.filter_main').toggleClass('hidden-sm').toggleClass('hidden-xs');
-            $('#filter_main').addClass('hidden-sm hidden-xs');
-            if ($(this).html().trim()[0] === '+'){
-                  $(this).html('- ' + refine);
-              }
-            else{
-            $('.filter_main').removeClass('hidden-sm hidden-xs');
-            $('#filter_container').removeClass('hidden-sm hidden-xs');
-               $(this).html('+ ' + refine);
-           }
+            if ($(this).html().trim()[0] === '+')
+                $(this).html('- ' + refine);
+            else
+                $(this).html('+ ' + refine);
         });
         });
 
@@ -121,13 +131,6 @@ define(
                 productSearch(keyword, page, typsenseClient, filterValue);
             },
 
-            /**
-             * 
-             * @param {*} keyword 
-             */
-            sliderComponent: function(keyword) {
-                //sliderAction(keyword, filterParam);
-            },
         };
 
         /**
@@ -200,11 +203,12 @@ define(
                     if (SLIDER == 1 && (tmin && tmax)) {
                         requestQuery = requestQuery+'&& price:['+tmin+'..'+tmax+']';
                     }
-                } else {
-                    if (tmin && tmax) {
-                        requestQuery = 'price:['+tmin+'..'+tmax+']';
-                    }
                 }
+                // } else {
+                //     if (tmin && tmax) {
+                //         requestQuery = 'price:['+tmin+'..'+tmax+']';
+                //     }
+                // }
 
                 searchParameters.filter_by = requestQuery;
 
@@ -235,8 +239,9 @@ define(
                         searchParameters.query_by = 'embedding,'+searchAttributes;
                     }
                 }
-
                 typsenseClient.collections(INDEX_PERFIX+STORE+'-products').documents().search(searchParameters).then((searchResults) => {
+                    sliderAction(keyword,searchParameters,searchResults.facet_counts[0].stats);
+                 
                     searchResultsArray.push(searchResults);
                     let html = '';
                     if (searchResults.hits.length < 1) {
@@ -442,8 +447,8 @@ define(
                     $('#product_result').html(html);
                     renderFilterOptions(searchResults);
                     showSelectedFilter(filterParam)
-                    //sliderAction(keyword, filterParam, null);
-
+                    sliderAction(keyword, filterParam);
+                    hitSearchAnalytics(searchParameters,searchResults)
                     const cartBtn = document.querySelector('#product_result');
                     if (cartBtn) {
                         cartBtn.addEventListener('click', function (e) {
@@ -474,7 +479,7 @@ define(
         }
 
         function paginationAction(totalPage, visiblePage, keyword, productCount) { 
-            const typsenseClient = searchConfig.createClient(typesenseConfig); 
+           
             if (totalPage && visiblePage) {
                 $('#product-pagination').twbsPagination({
                     totalPages: totalPage,
@@ -487,8 +492,9 @@ define(
                     onPageClick: function (event, page) {
                         if (page > 1) {
                             updateParam.updateParams(filterParam, null,page);
+                              productSearch(keyword, page, typsenseClient);
                         }
-                        productSearch(keyword, page, typsenseClient);
+                      
                     }
                 });
             }
@@ -553,7 +559,9 @@ define(
                             if (itemIndex > -1) {
                                 selectedIndex.splice(itemIndex, 1);
                             }
-                            stableContent = $('#'+selectArr[0])[0].outerHTML;
+                            if(selectArr[0] !='price'){
+                                stableContent = $('#'+selectArr[0])[0].outerHTML;
+                            }
                             selectedFilters.push({
                                 key:selectArr[0],
                                 content:stableContent
@@ -561,8 +569,8 @@ define(
                         }
                     }
                     updateParam.updateParams(filterParam);
-                    productSearch(keyword, 1, typsenseClient, filterParam);
-                    sliderAction(keyword, filterParam, $('#priceRange').val()); 
+                    productSearch(keyword, 1, typsenseClient, filterParam,'');
+                    
                 };
     
             }
@@ -578,6 +586,10 @@ define(
                     return item;
                  }
              });
+            if (SLIDER == 1) {
+                $('#price').html('')
+                priceSlider(filterArray);
+            }
             const typsenseClient = searchConfig.createClient(typesenseConfig);
             let keyword = $('#search-result-box').val();
              
@@ -631,10 +643,7 @@ define(
                 });
             }
     
-            if (SLIDER == 1) {
-                $('#price').html('')
-                priceSlider(filterArray);
-            }
+            
             $(document).on('click', '.read_toggle_link', function(e) {
                 let $button = $(this);
                 let itemId = $button.data('info');
@@ -673,7 +682,7 @@ define(
                 $button.attr('data-toggle-state', 'more');
                 $button.removeClass('read_less');
                 $('#toggle_' + itemId).addClass('read_toggle_link');
-                var filterHtml = renderFilterHtml(singleObjectItemData, 2, isReadMore, itemId);
+                var filterHtml = renderFilterHtml(singleObjectItemData, 6, isReadMore, itemId);
                 $('#filtermore_attribute_' + itemId).html(filterHtml);
             });
 
@@ -690,7 +699,6 @@ define(
                     filterParam = [];
                     selectedFilters = [];
                     selectedIndex = [];
-                    sliderAction(keyword, filterParam);
                     $('#clear_all').hide();
                     productSearch(keyword, 1, typsenseClient, null);
                 };
@@ -746,30 +754,41 @@ define(
                             }
                         }
                                                 else{
-                            if(e.target.type === 'radio'){
-                                   var checkField = document.getElementById(e.target.id);
-                          if (checkField) {
-                              let attributeFieldname = checkField.getAttribute('data-typename');
-                              if (checkField.checked) {
-                                  checkField.setAttribute("checked", "checked");
-                                  if (filterParam[attributeFieldname]) {
-                                      filterParam[attributeFieldname] = e.target.id;
-                                  } else {
-                                      filterParam[attributeFieldname] = e.target.id;
-                                  }
-                                 console.log(filterParam);
-                                  if($.inArray(attributeFieldname, selectedFilters) === -1) {
-                                      stableContent = $('#'+attributeFieldname)[0].outerHTML;
-                                      selectedFilters.push({
-                                          key:attributeFieldname,
-                                          content:stableContent
-                                      });
-                                  }
+if (e.target.type === 'radio') {
+    var checkField = document.getElementById(e.target.id);
+    
+    if (checkField) {
+        let attributeFieldname = checkField.getAttribute('data-typename');
+        
+        // Get all radio buttons with the same data-typename attribute
+        let allRadioButtons = document.querySelectorAll(`input[type='radio'][data-typename='${attributeFieldname}']`);
+        
+        // Uncheck all radio buttons in the same group
+        allRadioButtons.forEach(radio => {
+            radio.removeAttribute("checked");
+        });
 
-                              } 
-                              productSearch(keyword, 1, typsenseClient, filterParam);
-                          }
-                          }
+        if (checkField.checked) {
+            // Handle the checked state
+            checkField.setAttribute("checked", "checked");
+            filterParam[attributeFieldname] = e.target.id; // Store the selected radio button ID
+                stableContent = $('#' + attributeFieldname)[0].outerHTML;
+                console.log(stableContent);
+                selectedFilters.push({
+                    key: attributeFieldname,
+                    content: stableContent
+                });
+            // Update selectedIndex if necessary
+            if ($.inArray(e.target.id, selectedIndex) === -1) {
+                selectedIndex.push(e.target.id);
+            }
+           } 
+
+        updateParam.updateParams(filterParam);
+        productSearch(keyword, 1, typsenseClient, filterParam);
+        sliderAction(keyword,filterParam);
+    }
+}
                           }
                     });
                 });
@@ -792,7 +811,7 @@ define(
             let counts = item ? item.counts.slice(0, maxItems) : item.counts.slice(0, 2);
 
             $.each(counts, function (itemkey, itemValue) {
-                   if (itemValue.value && itemFacetType =='disjunctive' ) {
+                   if (itemValue.value && itemFacetType =='disjunctive') {
                     html += `
                         <div class="form-check col-md-12 filter_${item.field_name}">
                         <input type="checkbox" class="form-check-input rangeCheck" name="[${item.field_name}]" id="${itemValue.value}" ${$.inArray(itemValue.value, selectedIndex) != -1 ? 'checked' : 'null'}  data-range="${itemValue.value}" data-typename="${item.field_name}" readonly="true">
@@ -968,75 +987,108 @@ define(
 
             tmin = minValue;
             let i = 0;
-            if (!isSlide && i == 0) {
-                console.log(i);
+            if (!isSlide) {
                  $("#price-range>span:eq(0)").html("<span class='point'>$"+Math.floor(minValue)+"</span>");
                  $("#price-range>span:eq(1)").html("<span class='point'>$"+Math.ceil(maxValue)+"</span>");
             
             }
             i++;
         }
-
-        function sliderAction(keyword, filterParamData = null, currentValue = null) {
-            if (SLIDER == 1 && location.search) {
-                if (!keyword) {
-                    keyword = location.search.split('=')[1];
+        function hitSearchAnalytics(searchParameters,searchResults){
+         setTimeout(function () {
+          try {
+          const postData = {
+        uniqueId: UNIQUEID,
+        searchKey: searchParameters.q,
+        searchResult: searchResults,
+        sortValue :searchParameters.sort_by,
+        facetValue:searchParameters.filter_by,
+        page:searchParameters.page,
+        sessionId: $.cookie("_conversion_box_track_id")
+       };
+    $.ajax({
+        url: analyticsURL+`api/v1/analytics/instantSearchLog`,
+        type: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify(postData),
+        success: function(data) {
+            if (!data.ok) {
+                    console.log('Network response was not ok');
                 }
-                if (keyword.match(/&&/g)) {
-                    keyword = keyword.substring(0, keyword.indexOf('&&'));
-                }
-
-                let priceData = priceComponent.sliderPrice(keyword, '', filterParamData);
-                priceData.then((value) => {
-                    if (currentValue) {
-                        currentValue = currentValue.split('-');
-                        minValue = $.trim(currentValue[0]);
-                        maxValue = $.trim(currentValue[1]);
-                        
-                    } else {
-                        minValue = value.min;
-                        maxValue = value.max;
-                    }
-           if (window.location.search) {
-                        $.each(window.location.search.split('&&'), function (key, val) {
-                           if (val.indexOf('price') > -1) {
-                                val = val.substring(val.indexOf(":=") + 2);
-                                val = val.split('..');
-                                minValue = val[0];
-                                maxValue = val[1];
-                                $("#priceRange").val(minValue + " - " + maxValue);
-                            }
-                        });
-                    }
-                    
-
-                    $("#price-range").slider({
-                        step: 1,
-                        range: true, 
-                        min: parseInt(minValue), 
-                        max: parseInt(maxValue), 
-                        values: [parseInt(minValue), parseInt(maxValue)], 
-                        slide: function(event, ui)
-                        {
-                            //console.log(ui);
-
-                            // console.log(ui.handleIndex);
-                            ui.handle.innerHTML = '<span class="point">$' + ui.value + '</span>';
-                           // $("#price-range span:nth-child("+ ui.handleIndex +")").html(ui.value);
-                            isSlide = true;
-                            tmin = ui.values[0];
-                            tmax = ui.values[1];
-                            let priceParam = ui.values[0]+".."+ui.values[1];
-                            filterParam['price'] = priceParam;
-                            updateParam.updateParams(filterParam);
-                            //$("#priceRange").val(ui.values[0] + " - " + ui.values[1]);
-                            if (queryParam) {
-                                productSearch($('#search-result-box').val(), 1,searchConfig.createClient(typesenseConfig), '','',ui.values[0]+'-'+ui.values[1]);
-                            }
-                        }
-                    });
-                });
-            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error:', error);
         }
+    });
+      } catch (error) {
+    console.error('Error:', error);
+    }
+       }, 6000);
+
+        }
+
+function sliderAction(keyword, filterParamData = null, currentValue = null) {
+    if (SLIDER == 1 && location.search) {
+        if (!keyword) {
+            keyword = location.search.split('=')[1];
+        }
+        if (keyword.match(/&&/g)) {
+            keyword = keyword.substring(0, keyword.indexOf('&&'));
+        }
+        
+        let minValue, maxValue;
+        let priceData = priceComponent.sliderPrice(keyword,filterParamData);
+                priceData.then((value) => {
+        if (currentValue) {
+            minValue = currentValue.min;
+            maxValue = currentValue.max;
+        } else {
+            minValue = value.min;
+            maxValue = value.max;
+        }
+
+        // Reset slider values to default if no values are passed
+        if (filterParamData === null || filterParamData.price === undefined) {
+            minValue = value.min;
+            maxValue = value.max;
+        } else {
+            let priceRange = filterParamData.price.split("..");
+            if(priceRange!=''){
+            minValue = parseInt(priceRange[0]);
+            maxValue = parseInt(priceRange[1]);
+        }
+        }
+        let sliderHandles = $("#price-range").find(".ui-slider-handle");
+        sliderHandles.eq(0).html("<span class='point'>$" + Math.floor(minValue) + "</span>");
+        sliderHandles.eq(1).html("<span class='point'>$" + Math.ceil(maxValue) + "</span>");
+         if (filterParamData === null || filterParamData.price === undefined) {
+        // productSearch($('#search-result-box').val(), 1, searchConfig.createClient(typesenseConfig));
+
+     }
+        $("#price-range").slider({
+            step: 1,
+            range: true,
+            min: parseInt(value.min),
+            max: parseInt(value.max),
+            values: [parseInt(minValue), parseInt(maxValue)],
+            slide: function(event, ui) {
+                ui.handle.innerHTML = '<span class="point">$' + ui.value + '</span>';
+                isSlide = true;
+                tmin = ui.values[0];
+                tmax = ui.values[1];
+                let priceParam = ui.values[0] + ".." + ui.values[1];
+                filterParam['price'] = priceParam;
+                updateParam.updateParams(filterParam);
+                if (filterParam['price'] && isSlide == 1) {
+                    productSearch($('#search-result-box').val(), 1, searchConfig.createClient(typesenseConfig), '', '', ui.values[0] + '-' + ui.values[1]);
+                }
+            }
+
+        });
+        });       
+
+    }
+}
     }
 );

@@ -113,6 +113,7 @@ class Configuration extends Template implements CollectionDataSourceInterface
                 'indexprefix' => $this->configData->getIndexPrefix(),
                 'node' => $this->generaModel->base64Encode($this->configData->getNode()),
                 'nearest_node' => $this->generaModel->base64Encode($this->configData->nearestNodes()),
+                'unique_id' => $this->configData->getUniqueId(),
                 'protocol' => $this->configData->getProtocol(),
                 'port' => $this->configData->getPort(),
                 'highlights' => $this->configData->isHighlightEnabled(),
