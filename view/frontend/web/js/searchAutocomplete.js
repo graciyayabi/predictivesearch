@@ -93,7 +93,7 @@ define([
                     }
                 }
             });
-            $("#searchbox").onFocusOut(function() {
+              $("#searchbox").focusout(function() {
                  $('#search_result').hide();
             });
         },
