@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @package Ceymox_TypesenseSearch
+ * @author  Ceymox Technologies Pvt. Ltd.
+ */
 declare(strict_types=1);
 
 namespace Thecommerceshop\Predictivesearch\Model\DataProcessor;
@@ -127,6 +130,7 @@ class PageDataProcessor
         }
 
         if (!$this->configData->getAdminApiKey() ||
+                !$this->configData->getNode() ||
                 !$this->configData->getProtocol()
             ) {
             return;

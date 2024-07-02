@@ -10,7 +10,8 @@
     <body>
         <referenceBlock name="breadcrumbs" remove="true" />
         <referenceBlock name="page.main.title" display="false"/>
-        <move element="catalog.compare.sidebar" destination="sidebar.main" />
-        <move element="wishlist_sidebar" destination="sidebar.main" />
+        <move element="catalog.compare.sidebar" destination="sidebar.main"/>
+        <move element="catalog.leftnav" destination="sidebar.main" after="catalog.compare.sidebar" />
+        <move element="wishlist_sidebar" destination="sidebar.main" after="catalog.compare.sidebar" />
     </body>
 </page>

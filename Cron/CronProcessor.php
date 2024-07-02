@@ -59,10 +59,10 @@ class CronProcessor
      */
     public function execute()
     {
+
         if ($this->configData->clearRecords()) {
             $this->clearData();
-        }
-        
+        }    
         $this->queue->categoryDataSyncProcessor();
         $this->queue->cmsDataSyncProcessor();
         $this->queue->productDataSyncProcessor();

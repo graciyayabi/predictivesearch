@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Ceymox_TypesenseSearch
+ * @author  Ceymox Technologies Pvt. Ltd.
+ */
 declare(strict_types=1);
 
 namespace Thecommerceshop\Predictivesearch\Model\DataProcessor;
@@ -199,6 +203,7 @@ class ProductDataProcessor
         }
 
         if (!$this->configData->getAdminApiKey() ||
+                !$this->configData->getNode() ||
                 !$this->configData->getProtocol()
             ) {
                 return;
@@ -216,7 +221,7 @@ class ProductDataProcessor
      */
     public function syncAllProducts($ids, $storeId, $mode = null)
     {
-        if ( !empty($ids)) {
+        if ($this->configData->isCronEnbaled() && !empty($ids)) {
             return;
         }
 
@@ -228,7 +233,7 @@ class ProductDataProcessor
             $stores = $this->generalModel->getStore($storeId);
             $storeCode = $stores->getCode();
             $indexName  =  $this->getStoreCode($storeCode);
-            $productObj = $this->productFactory->create()->addAttributeToFilter('status',\Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED);
+            $productObj = $this->productFactory->create();
             foreach ($ids as $id) {
                 $productObj->load($id);
                 if (!$productObj->getId()) {
@@ -256,7 +261,7 @@ class ProductDataProcessor
                 $indexName =  $this->getStoreCode($storeCode);
                 //Get collections from typesense and check if the collections exist.
                 $collectionData = $this->typeSenseApi->retriveCollectionData();
-                if (!in_array($indexName, $collectionData ?? []) || $mode) {
+                if (!in_array($indexName, $collectionData) || $mode) {
                     //Get product schema structure
                     $productSchemaData = $this->productSchema->getProductSchema($indexName);
                     //Create schema with structure
@@ -325,7 +330,7 @@ class ProductDataProcessor
     {
         $response = [];
         $stockStatus = false;
-        $stockQty = null;
+        $stockQty = 0;
         $stock = $this->generalModel->getStockInfo($productId);
         if ($stock) {
             $stockStatus = $stock->getIsInStock();
@@ -435,7 +440,6 @@ class ProductDataProcessor
             }
             $spAmount = $product->getSpecialPrice();
             $spPrice = ($spAmount)?$this->priceHelper->currency($spAmount, true, false):'';
-            if($product->getStatus() ==  1){
             $response = [
                 'id' => $product->getId(),
                 'product_id' => $product->getId(),
@@ -466,7 +470,6 @@ class ProductDataProcessor
                 'short_description' => $this->removeHtmlTags($product->getShortDescription()),
                 'price_search' => round((float)$price, 2),
             ];
-        }
             $productArray = array_merge($finalAtrArray, $response);
             return $productArray;
         }
@@ -656,7 +659,7 @@ class ProductDataProcessor
     {
         if (!empty($productData)) {
             try {
-                $productObj = $this->productFactory->create()->addAttributeToFilter('status',\Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED);
+                $productObj = $this->productFactory->create();
                 $productObj->load($productData['productId']);
                 if ($productObj->getId()) {
                     $updatedDocument = $this->createProductData(

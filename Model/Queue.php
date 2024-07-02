@@ -104,7 +104,6 @@ class Queue
         $collectionFactory->addFieldToFilter('job_status', 0);
         $collectionFactory->addFieldToFilter('job_type', ['in' => ['categoryIndex', 'categoryUpdateIndex']]);
         $firstItem = $collectionFactory->getFirstItem();
-
         if ($firstItem->getJobId()) {
             $item = $this->json->unserialize($firstItem->getJobData());
             if ($firstItem->getJobType() == 'categoryUpdateIndex') {

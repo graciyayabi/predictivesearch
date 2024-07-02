@@ -61,10 +61,10 @@ define([
                 var keywordlength = keyword.length;
                 if (keyword && (keywordlength >= mimimumqueryLength) ) {
                     //enabling the search popup
-                    $("#search_result").css("display", "flex");
-                    
+                   
                     //bind product, category and page data and suggestion data
                     multiSearchComponent.multiSearch(keyword, typsenseClient);
+                     $("#search_result").css("display", "flex");
                 } else {
                     $('#product_section').html('');
                     $('#cms_section').html('');
@@ -84,7 +84,7 @@ define([
             });
 
             //popup toogle action when clicking on search box
-            $("body").click(function() {
+            $("#searchbox").focusin(function() {
                if (keyword) {
                     if ($('#search_result').is(':hidden')) {
                         $('#search_result').show();
@@ -92,6 +92,9 @@ define([
                         $('#search_result').hide();
                     }
                 }
+            });
+            $("#searchbox").onFocusOut(function() {
+                 $('#search_result').hide();
             });
         },
      getSessionID: function() {

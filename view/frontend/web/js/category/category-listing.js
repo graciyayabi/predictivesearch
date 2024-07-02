@@ -274,7 +274,7 @@ define([
                         loadedProductCount = searchResults.found;
                     }
                 }
-
+                 
                 let paginationHtml = `<div>
                     <div>Found ${loadedProductCount} out of ${searchResults.found} Results in ${searchResults.search_time_ms} ms</div>
                 </div>`;
@@ -699,6 +699,7 @@ define([
                 sliderCategoryAction();
                 $('#clear_all').hide();
                 categoryProductSearch(1, keyword, sortQuery,  filterParam, null);
+
             };
         }
         const filterContainers = document.querySelectorAll('.filter_check');

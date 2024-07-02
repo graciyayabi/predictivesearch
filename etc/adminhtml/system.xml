@@ -17,17 +17,20 @@
                 </field>
                 <field id="host" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Host</label>
+                                     <comment><![CDATA[ You can find your API keys in the <a href="https://app.conversionbox.io/auth/login" target="_blank">ConversionBox dashboard</a>. ]]></comment>
                     <depends>
                         <field id="enable_frontend">1</field>
                     </depends>
                     <validate>required-entry</validate>
                 </field>
+
                    <field id="node" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Node</label>
                     <depends>
                         <field id="enable_frontend">1</field>
                     </depends>
                     <validate>required-entry</validate>
+                    <comment><![CDATA[ You can find your API keys in the <a href="https://app.conversionbox.io/auth/login" target="_blank">ConversionBox dashboard</a>. ]]></comment>
                 </field>
                 <field id="search_only_api_key" translate="label" type="password" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Search-only (public) API key</label>
@@ -35,6 +38,7 @@
                         <field id="enable_frontend">1</field>
                     </depends>
                     <validate>required-entry</validate>
+                    <comment><![CDATA[ You can find your API keys in the <a href="https://app.conversionbox.io/auth/login" target="_blank">ConversionBox dashboard</a>. ]]></comment>
                 </field>
                 <field id="admin_api_key" translate="label" type="password" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Admin API key</label>
@@ -42,6 +46,7 @@
                         <field id="enable_frontend">1</field>
                     </depends>
                     <validate>required-entry</validate>
+                    <comment><![CDATA[ You can find your API keys in the <a href="https://app.conversionbox.io/auth/login" target="_blank">ConversionBox dashboard</a>. ]]></comment>
                 </field>
                 <field id="index_prefix" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Index Name Prefix</label>

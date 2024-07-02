@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Ceymox_TypesenseSearch
+ * @author  Ceymox Technologies Pvt. Ltd.
+ */
 declare(strict_types=1);
 
 namespace Thecommerceshop\Predictivesearch\Model\DataProcessor;
@@ -145,6 +149,7 @@ class CategoryDataProcessor
         }
 
         if (!$this->configData->getAdminApiKey() ||
+                !$this->configData->getNode() ||
                 !$this->configData->getProtocol()
             ) {
                 return;
@@ -163,7 +168,7 @@ class CategoryDataProcessor
     public function syncCategory($ids, $storeId, $mode = null)
     {
         try {
-            if (!empty($ids)) {
+            if ($this->configData->isCronEnbaled() && !empty($ids)) {
                 return;
             }
     
@@ -206,7 +211,7 @@ class CategoryDataProcessor
                     //Get collections from typesense and check if the collections exist.
                     $collectionData = $this->typeSenseApi->retriveCollectionData();
                     $stores = $this->general->getStore($storeData->getId());
-                    if (!in_array($indexName, $collectionData ?? []) || $mode = 'cron') {
+                    if (!in_array($indexName, $collectionData) || $mode = 'cron') {
                        // Get category schema structure
                         $categorySchemaData = $this->categorySchema->getCategorySchema($indexName);
         
@@ -236,7 +241,7 @@ class CategoryDataProcessor
                         $response = $this->typeSenseApi->importCollectionData($indexName, $catCollection);
                         $this->logger->error($response);
                         //error handling section need to be implemented here....
-                   }
+                    }
                 } catch (Exception $e) {
                     $this->logger->error($e->getMessage());
                 }
