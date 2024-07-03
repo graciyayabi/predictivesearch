@@ -201,7 +201,7 @@ define(
                     searchParameters.query_by = searchAttributes;
                     requestQuery = requestQuery.slice(0, -2);
                     if (SLIDER == 1 && (tmin && tmax)) {
-                        requestQuery = requestQuery+'&& price:['+tmin+'..'+tmax+']';
+                        requestQuery = requestQuery;
                     }
                 }
                 // } else {
@@ -1065,11 +1065,18 @@ function sliderAction(keyword, filterParamData = null, currentValue = null) {
      //           resetSlider(minValue,maxValue) ;  
 
      // }
+           if(filterParamData.price == undefined || filterParamData.price =="") {
+            min =parseInt(minValue);
+            max =  parseInt(maxValue);
+            }else{
+            min = parseInt(value.min);
+            max = parseInt(value.max);
+            }
         $("#price-range").slider({
             step: 1,
             range: true,
-            min:parseInt(value.min),
-            max: parseInt(value.max),
+            min:min,
+            max:max,
             values: [parseInt(minValue), parseInt(maxValue)],
             slide: function(event, ui) {
                 ui.handle.innerHTML = '<span class="point">$' + ui.value + '</span>';
