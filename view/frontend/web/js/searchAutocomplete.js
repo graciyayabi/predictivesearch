@@ -64,12 +64,14 @@ define([
                    
                     //bind product, category and page data and suggestion data
                     multiSearchComponent.multiSearch(keyword, typsenseClient);
-                     $("#search_result").css("display", "flex");
+                     $("#search_result").addClass("autocomplete");
+                      $("#search_result").css("display","flex");
                 } else {
                     $('#product_section').html('');
                     $('#cms_section').html('');
                     $('#category_section').html('');
-                    $("#search_result").css("display", "none");
+                    $("#search_result").removeClass("autocomplete");
+                    $("#search_result").css("display","none");
                 }
             
                 self.searchPage(searchUrl+keyword)
@@ -85,14 +87,20 @@ define([
 
             //popup toogle action when clicking on search box
             $("#searchbox").click(function() {
-               if (keyword) {
-                    if ($('#search_result').is(':hidden')) {
-                        $('#search_result').show();
-                    } else {
-                        $('#search_result').hide();
+               var keywordlength = keyword.length;
+               if (keywordlength >= mimimumqueryLength && $('#search_result').hasClass("autocomplete")) {
+                        $('#search_result').removeClass("autocomplete");
+                    } else if(keywordlength >= mimimumqueryLength) {
+                       $("#search_result").addClass("autocomplete");
                     }
-                }
             });
+            $(".search-main").focusout(function() {
+                    if ($('#search_result').hasClass("autocomplete")) {
+                        $('#search_result').removeClass("autocomplete");
+                    } 
+
+            });
+
         },
      getSessionID: function() {
     let cookieID =  this.getCookie('_conversion_box_track_id');

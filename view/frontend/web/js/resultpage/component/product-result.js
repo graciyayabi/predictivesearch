@@ -95,7 +95,7 @@ define(
                 }
             });
             filterParam = filterparamArr;
-           sliderAction(location.search.split('=')[1], filterParam); 
+           //sliderAction(location.search.split('=')[1], filterParam); 
         //     $('body').on('click', '#refine-toggle', function () {
         //     $('.filter_main').toggleClass('hidden-sm').toggleClass('hidden-xs');
         //     $('#filter_main').addClass('hidden-sm hidden-xs');
@@ -447,7 +447,12 @@ define(
                     $('#product_result').html(html);
                     renderFilterOptions(searchResults);
                     showSelectedFilter(filterParam)
-                    sliderAction(keyword, filterParam,searchResults.facet_counts[0].stats);
+                    if(searchParameters.filter_by == ""){
+                       sliderAction(location.search.split('=')[1], filterParam); 
+                    }else{
+                          sliderAction(keyword, filterParam,searchResults.facet_counts[0].stats);
+                    }
+                  
                     hitSearchAnalytics(searchParameters,searchResults)
                     const cartBtn = document.querySelector('#product_result');
                     if (cartBtn) {
@@ -784,7 +789,7 @@ if (e.target.type === 'radio') {
 
         updateParam.updateParams(filterParam);
         productSearch(keyword, 1, typsenseClient, filterParam);
-        sliderAction(keyword,filterParam);
+      //  sliderAction(keyword,filterParam);
     }
 }
                           }
@@ -1049,7 +1054,6 @@ function sliderAction(keyword, filterParamData = null, currentValue = null) {
             minValue = value.min;
             maxValue = value.max;
         }
-
         // Reset slider values to default if no values are passed
        if(filterParamData.price != undefined) {
             let priceRange = filterParamData.price.split("..");
@@ -1058,13 +1062,6 @@ function sliderAction(keyword, filterParamData = null, currentValue = null) {
             maxValue = parseInt(priceRange[1]);
         }
         }
-        let sliderHandles = $("#price-range").find(".ui-slider-handle");
-        sliderHandles.eq(0).html("<span class='point'>$" + Math.floor(minValue) + "</span>");
-        sliderHandles.eq(1).html("<span class='point'>$" + Math.ceil(maxValue) + "</span>");
-     //     if (filterParamData != null) {
-     //           resetSlider(minValue,maxValue) ;  
-
-     // }
            if(filterParamData.price == undefined || filterParamData.price =="") {
             min =parseInt(minValue);
             max =  parseInt(maxValue);
@@ -1092,6 +1089,9 @@ function sliderAction(keyword, filterParamData = null, currentValue = null) {
             }
 
         });
+        let sliderHandles = $("#price-range").find(".ui-slider-handle");
+        sliderHandles.eq(0).html("<span class='point'>$" + Math.floor(minValue) + "</span>");
+        sliderHandles.eq(1).html("<span class='point'>$" + Math.ceil(maxValue) + "</span>");
         });   
 
     }
