@@ -84,7 +84,7 @@ define([
             });
 
             //popup toogle action when clicking on search box
-            $("#searchbox").focusin(function() {
+            $("#searchbox").click(function() {
                if (keyword) {
                     if ($('#search_result').is(':hidden')) {
                         $('#search_result').show();
@@ -92,9 +92,6 @@ define([
                         $('#search_result').hide();
                     }
                 }
-            });
-              $("#searchbox").focusout(function() {
-                 $('#search_result').hide();
             });
         },
      getSessionID: function() {

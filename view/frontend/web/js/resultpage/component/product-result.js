@@ -95,7 +95,7 @@ define(
                 }
             });
             filterParam = filterparamArr;
-         //   sliderAction(location.search.split('=')[1], filterParam); 
+           sliderAction(location.search.split('=')[1], filterParam); 
         //     $('body').on('click', '#refine-toggle', function () {
         //     $('.filter_main').toggleClass('hidden-sm').toggleClass('hidden-xs');
         //     $('#filter_main').addClass('hidden-sm hidden-xs');
@@ -240,7 +240,7 @@ define(
                     }
                 }
                 typsenseClient.collections(INDEX_PERFIX+STORE+'-products').documents().search(searchParameters).then((searchResults) => {
-                    sliderAction(keyword,searchParameters,searchResults.facet_counts[0].stats);
+                 //   sliderAction(keyword,searchParameters,searchResults.facet_counts[0].stats);
                  
                     searchResultsArray.push(searchResults);
                     let html = '';
@@ -299,7 +299,7 @@ define(
                     }
                     productCount = searchResults.found;
                     let paginationHtml = `<div>
-                        <div>Found ${loadedProductCount} out of ${searchResults.found} Results in ${searchResults.search_time_ms} ms</div>
+                        <div>Found ${searchResults.found} Results in ${searchResults.search_time_ms} ms</div>
                     </div>`;
                     $('#product_count').html(paginationHtml);
 
@@ -447,7 +447,7 @@ define(
                     $('#product_result').html(html);
                     renderFilterOptions(searchResults);
                     showSelectedFilter(filterParam)
-                    sliderAction(keyword, filterParam);
+                    sliderAction(keyword, filterParam,searchResults.facet_counts[0].stats);
                     hitSearchAnalytics(searchParameters,searchResults)
                     const cartBtn = document.querySelector('#product_result');
                     if (cartBtn) {
@@ -490,10 +490,8 @@ define(
                     prev: '<<',
                     next: '>>',
                     onPageClick: function (event, page) {
-                        if (page > 1) {
                             updateParam.updateParams(filterParam, null,page);
                               productSearch(keyword, page, typsenseClient);
-                        }
                       
                     }
                 });
@@ -615,7 +613,7 @@ define(
                     itemOptionsCondition = true;
                 }
                 if (filterHtml) {
-                    html += `<div class="filter_main_test" id="${item.field_name}">
+                    html += `<div class="filter_main_test" id="price"></div><div class="filter_main_test" id="${item.field_name}">
                     <span class="item_label">${itemLabel}</span>
                     <div class="child_main" id="more_option_${item.field_name}">
                         ${itemOptionsCondition ? `
@@ -687,10 +685,10 @@ define(
             });
 
             //first filter reassigning....
-            let selectedFiltersElem = selectedFilters[selectedFilters.length-1];
-            if (selectedFiltersElem != undefined) {
-                $('#'+selectedFiltersElem.key).html(selectedFiltersElem.content);
-            }
+            // let selectedFiltersElem = selectedFilters[selectedFilters.length-1];
+            // if (selectedFiltersElem != undefined) {
+            //     $('#'+selectedFiltersElem.key).html(selectedFiltersElem.content);
+            // }
 
             const resetbutton = document.querySelector('#clear_all');
 
@@ -1027,7 +1025,11 @@ if (e.target.type === 'radio') {
        }, 6000);
 
         }
-
+function resetSlider(minValue,maxValue) {
+  $("#price-range").slider({
+    value: [parseInt(minValue), parseInt(maxValue)],
+  });
+}
 function sliderAction(keyword, filterParamData = null, currentValue = null) {
     if (SLIDER == 1 && location.search) {
         if (!keyword) {
@@ -1049,10 +1051,7 @@ function sliderAction(keyword, filterParamData = null, currentValue = null) {
         }
 
         // Reset slider values to default if no values are passed
-        if (filterParamData === null || filterParamData.price === undefined) {
-            minValue = value.min;
-            maxValue = value.max;
-        } else {
+       if(filterParamData.price != undefined) {
             let priceRange = filterParamData.price.split("..");
             if(priceRange!=''){
             minValue = parseInt(priceRange[0]);
@@ -1062,14 +1061,14 @@ function sliderAction(keyword, filterParamData = null, currentValue = null) {
         let sliderHandles = $("#price-range").find(".ui-slider-handle");
         sliderHandles.eq(0).html("<span class='point'>$" + Math.floor(minValue) + "</span>");
         sliderHandles.eq(1).html("<span class='point'>$" + Math.ceil(maxValue) + "</span>");
-         if (filterParamData === null || filterParamData.price === undefined) {
-        // productSearch($('#search-result-box').val(), 1, searchConfig.createClient(typesenseConfig));
+     //     if (filterParamData != null) {
+     //           resetSlider(minValue,maxValue) ;  
 
-     }
+     // }
         $("#price-range").slider({
             step: 1,
             range: true,
-            min: parseInt(value.min),
+            min:parseInt(value.min),
             max: parseInt(value.max),
             values: [parseInt(minValue), parseInt(maxValue)],
             slide: function(event, ui) {
@@ -1086,7 +1085,7 @@ function sliderAction(keyword, filterParamData = null, currentValue = null) {
             }
 
         });
-        });       
+        });   
 
     }
 }
