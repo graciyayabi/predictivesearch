@@ -89,16 +89,14 @@ define([
                if (keywordlength >= mimimumqueryLength && $('#search_result').hasClass("autocomplete")) {
                         $('#search_result').removeClass("autocomplete");
                     } else if(keywordlength >= mimimumqueryLength) {
-                       $("#search_result").addClass("autocomplete");
+                      $("#search_result").addClass("autocomplete");
                     }
+                    event.stopPropagation();
             });
-            $(".search-main").focusout(function() {
-                    if ($('#search_result').hasClass("autocomplete")) {
-                        $('#search_result').removeClass("autocomplete");
-                    } 
+             $("body").click(function() {         
+                      $('#search_result').removeClass("autocomplete");                
 
             });
-
         },
      getSessionID: function() {
     let cookieID =  this.getCookie('_conversion_box_track_id');
