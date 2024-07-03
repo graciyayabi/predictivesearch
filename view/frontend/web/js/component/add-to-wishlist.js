@@ -24,7 +24,10 @@ define(
                         },
                         success: function (response) {
                             if (customer().firstname) {
-                                if (response.success) {
+                             if (response.success) {
+                            let sections = ['wishlist'];
+                            customerData.invalidate(sections);
+                            customerData.reload(sections, true);
                                     window.location.href = '/wishlist/index/index';
                                 }
                             } else {
