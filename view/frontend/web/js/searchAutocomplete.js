@@ -65,13 +65,11 @@ define([
                     //bind product, category and page data and suggestion data
                     multiSearchComponent.multiSearch(keyword, typsenseClient);
                      $("#search_result").addClass("autocomplete");
-                      $("#search_result").css("display","flex");
                 } else {
                     $('#product_section').html('');
                     $('#cms_section').html('');
                     $('#category_section').html('');
                     $("#search_result").removeClass("autocomplete");
-                    $("#search_result").css("display","none");
                 }
             
                 self.searchPage(searchUrl+keyword)

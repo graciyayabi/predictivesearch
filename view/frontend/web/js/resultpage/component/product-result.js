@@ -1079,14 +1079,16 @@ function sliderAction(keyword, filterParamData = null, currentValue = null) {
                 ui.handle.innerHTML = '<span class="point">$' + ui.value + '</span>';
                 isSlide = true;
                 tmin = ui.values[0];
-                tmax = ui.values[1];
-                let priceParam = ui.values[0] + ".." + ui.values[1];
+                tmax = ui.values[1];       
+            },
+             stop: function(event, ui) {
+                 let priceParam = ui.values[0] + ".." + ui.values[1];
                 filterParam['price'] = priceParam;
                 updateParam.updateParams(filterParam);
                 if (filterParam['price'] && isSlide == 1) {
                     productSearch($('#search-result-box').val(), 1, searchConfig.createClient(typesenseConfig), '', '', ui.values[0] + '-' + ui.values[1]);
                 }
-            }
+             }
 
         });
         let sliderHandles = $("#price-range").find(".ui-slider-handle");

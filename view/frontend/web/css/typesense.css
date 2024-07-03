@@ -1004,10 +1004,10 @@ display:block;
 }
 
 .page-products.page-with-filter.catalogsearch-result-index .columns .block.block-compare{
-display:none;
+display:block !important;
 }
 .page-products.page-with-filter.catalogsearch-result-index .columns .block.block-wishlist{
-display:none;
+display:block !important;
 }
 .page-products.page-with-filter.catalogsearch-result-index.page-layout-2columns-left  #refine-toggle{
 display:block !important;
@@ -1111,4 +1111,7 @@ width: 95%;
     }
     .filter_main input#priceRange {
     display: none !important;
+}
+#search-component .search_result.three-col.autocomplete{
+    display:flex !Important;
 }

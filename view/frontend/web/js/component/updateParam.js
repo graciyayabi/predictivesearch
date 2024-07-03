@@ -36,7 +36,7 @@ define(
                 if (page) {
                     newUrl = newUrl+'&&page='+page;
                 }
-                 if (!page) {
+                 if (!page || page == 1 ) {
                     newUrl = newUrl;
                 }
                 if (sortQuery) {
