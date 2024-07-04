@@ -83,14 +83,17 @@ class AddToCompare extends Action
     {
         $productId = (int)$this->getRequest()->getParam('id');
         $response = ['success' => false];
-        
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+        $baseUrl = $storeManager->getStore()->getBaseUrl();
+        $compareUrl = $baseUrl .'catalog/product_compare/';
         if ($productId) {
             try {
                 $product = $this->productRepository->getById($productId);
                 if ($product) {
                     $this->listCompare->addProduct($product);
                     $this->compare->calculate();
-                    $message = __('You added %1 to your compare list.', $product->getName());
+                    $message = __('You added %1 to your <a href="%2">comparison list</a>.', $product->getName(),$compareUrl);
                     $response = ['success' => true, 'message' => $message];
                 }
             } catch (NoSuchEntityException $e) {

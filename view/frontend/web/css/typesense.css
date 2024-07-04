@@ -1140,3 +1140,10 @@ margin-right: 46px;}
     order: 1;
     position: unset;
 }
+.page-products.page-with-filter.catalogsearch-result-index.page-layout-2columns-left .filter_main_test {
+    margin-bottom: 20px;
+}
+.page-products.page-with-filter.catalogsearch-result-index #more_option_category #filtermore_attribute_category .form-check{
+    display: flex;
+    align-items: flex-start;
+}
